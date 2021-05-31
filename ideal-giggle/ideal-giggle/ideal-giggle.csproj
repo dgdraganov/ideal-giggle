@@ -6,4 +6,8 @@
     <RootNamespace>ideal_giggle</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.1" />
+  </ItemGroup>
+
 </Project>

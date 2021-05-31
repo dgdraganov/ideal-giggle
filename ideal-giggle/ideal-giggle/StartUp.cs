@@ -14,9 +14,9 @@ namespace ideal_giggle
             if (!succ)
                 return;
 
-
             // All files are present and the data loading may begin
-            
+            var fileName = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Comments.xml";
+            var xmlRows = dm.GetTableRows(fileName);
         }
     }
 }
