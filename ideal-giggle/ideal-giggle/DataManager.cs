@@ -47,14 +47,16 @@ namespace ideal_giggle
             return true;
         }
 
+       
+
         public XmlNodeList GetTableRows(string fileName)
         {
             XmlDocument doc = new XmlDocument();
             doc.Load(fileName);
             var nodeName = fileName.Split('\\').Last().Split('.').First().ToLower();
             XmlNode mainNode = doc.SelectSingleNode(nodeName);
-
-            //var ku = mainNode.ChildNodes[0].Attributes["Id"];
+           
+            //var mu = mainNode.ChildNodes[0].Attributes["Id"];
 
             return mainNode.ChildNodes;
         }

@@ -15,8 +15,18 @@ namespace ideal_giggle
                 return;
 
             // All files are present and the data loading may begin
-            var fileName = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Comments.xml";
-            var xmlRows = dm.GetTableRows(fileName);
+            var fileNameComments = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Comments.xml";
+            var fileNamePosts = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Posts.xml";
+            var xmlRowsComments = dm.GetTableRows(fileNameComments);
+            var xmlRowsPosts = dm.GetTableRows(fileNamePosts);
+
+            OracleAdapter adapter = new OracleAdapter("fakeConnectionString", "KurecDb");
+
+            adapter.FillPostsTable(fileNamePosts);
+            adapter.FillCommentsTable(xmlRowsComments);
+            adapter.FillUsersTable(xmlRowsPosts);
+
+
         }
     }
 }
