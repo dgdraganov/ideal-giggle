@@ -25,12 +25,19 @@ namespace ideal_giggle
             var fileNameComments =  @$"{dir}\Comments.xml";
 
             OracleAdapter adapter = 
-                new OracleAdapter("...fakeConnectionString...", "...KurecDb...");
-        
-            adapter.FillPostsTable(dm.DeserializeToObject<Posts>(fileNamePosts));
-            adapter.FillUsersTable(dm.DeserializeToObject<Users>(fileNameUsers));
-            adapter.FillVotesTable(dm.DeserializeToObject<Votes>(fileNameVotes));
-            adapter.FillCommentsTable(dm.DeserializeToObject<Comments>(fileNameComments));
+                new OracleAdapter("... fakeConnectionString ...", "... KurecDb ...");
+
+            Posts posts = dm.DeserializeToObject<Posts>(fileNamePosts);
+            adapter.FillPostsTable(posts);
+
+            Users users = dm.DeserializeToObject<Users>(fileNameUsers);
+            adapter.FillUsersTable(users);
+
+            Votes votes = dm.DeserializeToObject<Votes>(fileNameVotes);
+            adapter.FillVotesTable(votes);
+
+            Comments comments = dm.DeserializeToObject<Comments>(fileNameComments);
+            adapter.FillCommentsTable(comments);
 
        
 
