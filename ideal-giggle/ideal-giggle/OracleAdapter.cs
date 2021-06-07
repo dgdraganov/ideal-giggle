@@ -31,66 +31,59 @@ namespace ideal_giggle
         }
 
 
-        /// <summary>
-        /// FillCommentsTable uses plain old instert for the whole data at once
-        /// </summary>
-        /// <param name="tableRows"></param>
-        public void FillCommentsTable(XmlNodeList tableRows)
+        // One way of inserting bulk data to Oracle db
+        public void FillVotesTable(Votes users)
         {
-            var tasks = new List<Task>();
+            string tableName = users.GetType().Name;
 
-            int[] ids = new int[tableRows.Count];
-            int[] postIds = new int[tableRows.Count];
-            int[] userIds = new int[tableRows.Count];
-            int[] scores = new int[tableRows.Count];
-            string[] texts = new string[tableRows.Count];
-            string[] contentLicenses = new string[tableRows.Count];
-            // CreationDate ? data type
-
-            // ======================================================================
-            int chunk = tableRows.Count / 40;
-            int from = 0;
-            int to = chunk;
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id");
+            dTable.Columns.Add("PostId");
+            dTable.Columns.Add("VoteTypeId");
+            dTable.Columns.Add("CreationDate");
 
 
-            while (true)
+            var votes = users.Rows;
+            foreach (var vote in votes)
             {
-                int fromLocal = from;
-                int toLocal = to;
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = vote.Id;
+                dRow["PostId"] = vote.PostId;
+                dRow["VoteTypeId"] = vote.VoteTypeId;
+                dRow["CreationDate"] = vote.CreationDate;
 
-                Action action = () =>
-                {
-
-                    for (int i = fromLocal; i < toLocal; i++)
-                    {
-                        ids[i] = Convert.ToInt32(tableRows[i].Attributes["Id"].Value);
-                        postIds[i] = Convert.ToInt32(tableRows[i].Attributes["PostId"].Value);
-                        userIds[i] = Convert.ToInt32(tableRows[i].Attributes["UserId"]?.Value);
-                        scores[i] = Convert.ToInt32(tableRows[i].Attributes["Score"].Value);
-                        texts[i] = tableRows[i].Attributes["Text"].Value;
-                        contentLicenses[i] = tableRows[i].Attributes["ContentLicense"].Value;
-                        // CreationDate ? data type
-                    }
-
-                    //ConsolePrinter.PrintLine($"Done from {fromLocal} to {toLocal}", ConsoleColor.Green);
-                };
-
-                tasks.Add(Task.Factory.StartNew(action));
-
-                from = to;
-                to += chunk;
-
-                if (to > tableRows.Count)
-                {
-                    to = tableRows.Count;
-                }
-                if (from >= tableRows.Count)
-                {
-                    break;
-                }
+                dTable.Rows.Add(dRow);
             }
 
-            Task.WaitAll(tasks.ToArray());
+
+            try
+            {
+                using (var connection = new OracleConnection(ConnectionString))
+                {
+                    connection.Open();
+                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
+                    {
+                        bulkCopy.DestinationTableName = $"{DbName}.{tableName}";
+                        bulkCopy.BulkCopyTimeout = 600;
+                        bulkCopy.WriteToServer(dTable);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsolePrinter.PrintLine($"Method {nameof(FillVotesTable)} failed when inserting bulp data to the oracle table {DbName}.{tableName}!", ConsoleColor.Red);
+                return;
+            }
+
+        }
+
+        // Second way of inserting bulk data to Oracledb
+        public void FillVotesTable2(Votes users)
+        {
+            int[] ids = users.Rows.Select(r => r.Id).ToArray();
+            int[] postIds = users.Rows.Select(r => r.PostId).ToArray();
+            int[] voteTypeIds = users.Rows.Select(r => r.VoteTypeId).ToArray();
+            DateTime[] creationDates = users.Rows.Select(r => r.CreationDate).ToArray();
 
             OracleParameter id = new OracleParameter();
             id.OracleDbType = OracleDbType.Int32;
@@ -100,125 +93,55 @@ namespace ideal_giggle
             postId.OracleDbType = OracleDbType.Int32;
             postId.Value = postIds;
 
-            OracleParameter userId = new OracleParameter();
-            userId.OracleDbType = OracleDbType.Int32;
-            userId.Value = userIds;
+            OracleParameter voteTypeId = new OracleParameter();
+            voteTypeId.OracleDbType = OracleDbType.Int32;
+            voteTypeId.Value = voteTypeIds;
 
-            OracleParameter score = new OracleParameter();
-            score.OracleDbType = OracleDbType.Int32;
-            score.Value = scores;
+            OracleParameter creationDate = new OracleParameter();
+            creationDate.OracleDbType = OracleDbType.Date;
+            creationDate.Value = creationDates;
 
-            OracleParameter text = new OracleParameter();
-            text.OracleDbType = OracleDbType.NVarchar2;
-            text.Value = texts;
 
-            OracleParameter contentLicense = new OracleParameter();
-            contentLicense.OracleDbType = OracleDbType.NVarchar2;
-            contentLicense.Value = contentLicenses;
-
-            // CreationDate ? data type
-
-            // ===============================
 
             OracleConnection connection = new OracleConnection(ConnectionString);
             connection.Open();
 
             OracleCommand cmd = new OracleCommand();
             cmd.Connection = connection;
-            cmd.CommandText = $"insert into {DbName}.Comments ( id, postId, score, userId, text, contentLicense) " +
-                                                     $"values (:1, :2, :3, :4, :5, :6 )";
+            cmd.CommandText = $"insert into {DbName}.Comments ( id, postId, voteTypeId, creationDate) " +
+                                                     $"values ( :1, :2, :3, :4 )";
             cmd.ArrayBindCount = ids.Length;
             cmd.Parameters.Add(id);
-            cmd.Parameters.Add(postIds);
-            cmd.Parameters.Add(scores);
-            cmd.Parameters.Add(userIds);
-            cmd.Parameters.Add(texts);
-            cmd.Parameters.Add(contentLicenses);
+            cmd.Parameters.Add(postId);
+            cmd.Parameters.Add(voteTypeId);
+            cmd.Parameters.Add(creationDate);
+
             cmd.ExecuteNonQuery();
         }
 
-
-        /// <summary>
-        /// FillUsersTable uses the Oracle Bulk copy functionality
-        /// </summary>
-        /// <param name="tableRows"></param>
-        public void FillUsersTable(XmlNodeList tableRows)
+        public void FillVotesTable3(Votes users)
         {
-
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Id");
-            dt.Columns.Add("Reputation");
-            //CreationDate
-            //LastAccessDate
-            dt.Columns.Add("DisplayName");
-            dt.Columns.Add("WebsiteUrl");
-            dt.Columns.Add("Location");
-            dt.Columns.Add("AboutMe");
-            dt.Columns.Add("Views");
-            dt.Columns.Add("UpVotes");
-            dt.Columns.Add("DownVotes");
-            dt.Columns.Add("AccountId");
-            dt.Columns.Add("ProfileImageUrl");
-
-
-            for (int i = 0; i < tableRows.Count; i++)
-            {
-                DataRow dr = dt.NewRow();
-                dr["Id"] = Convert.ToInt32(tableRows[i].Attributes["Id"].Value);
-                dr["Reputation"] = Convert.ToInt32(tableRows[i].Attributes["Reputation"].Value);
-                dr["DisplayName"] = tableRows[i].Attributes["DisplayName"].Value;
-                dr["WebsiteUrl"] = tableRows[i].Attributes["WebsiteUrl"].Value;
-                dr["Location"] = tableRows[i].Attributes["Location"].Value;
-                dr["AboutMe"] = tableRows[i].Attributes["AboutMe"].Value;
-                dr["Views"] = Convert.ToInt32(tableRows[i].Attributes["Views"].Value);
-                dr["UpVotes"] = Convert.ToInt32(tableRows[i].Attributes["UpVotes"].Value);
-                dr["DownVotes"] = Convert.ToInt32(tableRows[i].Attributes["DownVotes"].Value);
-                dr["AccountId"] = Convert.ToInt32(tableRows[i].Attributes["AccountId"].Value);
-                dr["ProfileImageUrl"] = tableRows[i].Attributes["ProfileImageUrl"].Value;
-                //CreationDate
-                //LastAccessDate
-
-                dt.Rows.Add(dr);
-            }
-
-            try
-            {
-                using (var connection = new OracleConnection(ConnectionString))
-                {
-                    connection.Open();
-                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
-                    {
-                        bulkCopy.DestinationTableName = $"{DbName}.Users";
-                        bulkCopy.BulkCopyTimeout = 600;
-                        bulkCopy.WriteToServer(dt);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ConsolePrinter.PrintLine($"Method {nameof(FillUsersTable)} failed when inserting bulp to the table {DbName}.Users!", ConsoleColor.Red);
-                return;
-            }
-
         }
 
 
 
-
+        /// /////////////////////////////////////////////////////
         public void FillPostsTable(Posts posts)
         {
+           
 
         }
+   
+
+
+
 
         public void FillUsersTable(Users users)
         {
            
         }
 
-        public void FillVotesTable(Votes users)
-        {
-
-        }
+   
 
         public void FillCommentsTable(Comments users)
         {

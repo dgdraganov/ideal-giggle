@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace ideal_giggle
@@ -58,8 +55,6 @@ namespace ideal_giggle
             }
             return obj;
         }
-
-    
 
     }
 }
