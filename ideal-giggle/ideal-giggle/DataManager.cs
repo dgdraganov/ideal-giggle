@@ -4,24 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace ideal_giggle
 {
     public class DataManager
     {
-        public DataManager(string folderName, params string[] fileNames)
+        public DataManager(params string[] fileNames)
         {
-            FolderName = folderName;
             FileNames = fileNames;
         }
 
-        public string FolderName { get; }
         public string[] FileNames { get; }
 
 
-        public bool CheckIfDataExists()
+        public bool CheckIfDataExists(string dir)
         {
-            var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\{FolderName}");
+            
             if (!Directory.Exists(dir))
             {
                 var dirInfo = Directory.CreateDirectory(dir);
@@ -47,19 +46,21 @@ namespace ideal_giggle
             return true;
         }
 
-       
 
-        public XmlNodeList GetTableRows(string fileName)
+        public T DeserializeToObject<T>(string fileNamePosts) where T : class
         {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(fileName);
-            var nodeName = fileName.Split('\\').Last().Split('.').First().ToLower();
-            XmlNode mainNode = doc.SelectSingleNode(nodeName);
-           
-            //var mu = mainNode.ChildNodes[0].Attributes["Id"];
+            XmlSerializer serializer =
+                   new XmlSerializer(typeof(T));
 
-            return mainNode.ChildNodes;
+            T obj;
+            using (Stream reader = File.OpenRead(fileNamePosts))
+            {
+                obj = (T)serializer.Deserialize(reader);
+            }
+            return obj;
         }
+
+    
 
     }
 }

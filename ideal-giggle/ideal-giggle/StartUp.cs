@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ideal_giggle
@@ -7,24 +8,31 @@ namespace ideal_giggle
     {
         static void Main(string[] args)
         {
-            DataManager dm = new DataManager("DbData", "Users", "Posts", "Comments", "Votes");
+         
+            var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
-            var succ = dm.CheckIfDataExists();
+            DataManager dm = new DataManager("Users", "Posts", "Comments", "Votes");
+
+            var succ = dm.CheckIfDataExists(dir);
 
             if (!succ)
                 return;
 
             // All files are present and the data loading may begin
-            var fileNameComments = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Comments.xml";
-            var fileNamePosts = @"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Posts.xml";
-            var xmlRowsComments = dm.GetTableRows(fileNameComments);
-            var xmlRowsPosts = dm.GetTableRows(fileNamePosts);
+            var fileNamePosts =     @$"{dir}\Posts.xml";
+            var fileNameUsers =     @$"{dir}\Users.xml";
+            var fileNameVotes =     @$"{dir}\Votes.xml";
+            var fileNameComments =  @$"{dir}\Comments.xml";
 
-            OracleAdapter adapter = new OracleAdapter("fakeConnectionString", "KurecDb");
+            OracleAdapter adapter = 
+                new OracleAdapter("...fakeConnectionString...", "...KurecDb...");
+        
+            adapter.FillPostsTable(dm.DeserializeToObject<Posts>(fileNamePosts));
+            adapter.FillUsersTable(dm.DeserializeToObject<Users>(fileNameUsers));
+            adapter.FillVotesTable(dm.DeserializeToObject<Votes>(fileNameVotes));
+            adapter.FillCommentsTable(dm.DeserializeToObject<Comments>(fileNameComments));
 
-            adapter.FillPostsTable(fileNamePosts);
-            adapter.FillCommentsTable(xmlRowsComments);
-            adapter.FillUsersTable(xmlRowsPosts);
+       
 
 
         }

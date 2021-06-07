@@ -31,12 +31,6 @@ namespace ideal_giggle
         }
 
 
-        public void PartiallyProcess()
-        {
-
-        }
-
-
         /// <summary>
         /// FillCommentsTable uses plain old instert for the whole data at once
         /// </summary>
@@ -97,8 +91,6 @@ namespace ideal_giggle
             }
 
             Task.WaitAll(tasks.ToArray());
-
-
 
             OracleParameter id = new OracleParameter();
             id.OracleDbType = OracleDbType.Int32;
@@ -212,79 +204,26 @@ namespace ideal_giggle
 
 
 
-        public void FillPostsTable(string fileName)
+
+        public void FillPostsTable(Posts posts)
         {
-            XmlRootAttribute xRoot = new XmlRootAttribute();
-            xRoot.ElementName = "posts";
-            xRoot.IsNullable = false;
-
-            XmlSerializer serializer =
-                    new XmlSerializer(typeof(Posts), xRoot);
-
-            Posts posts;
-
-            using (Stream reader = new FileStream(fileName, FileMode.Open))
-            {
-                // Call the Deserialize method to restore the object's state.
-                posts = (Posts)serializer.Deserialize(reader);
-            }
-
-
 
         }
 
-        public void FillVotesTable(XmlNodeList table)
+        public void FillUsersTable(Users users)
+        {
+           
+        }
+
+        public void FillVotesTable(Votes users)
+        {
+
+        }
+
+        public void FillCommentsTable(Comments users)
         {
 
         }
     }
 
-    [XmlRoot("posts")]
-    public class Posts
-    {
-        [XmlElement("row")]
-        public List<Row> Rows { get; set; }
-    }
-
-    public class Row
-    {
-        [XmlAttribute("Id")]
-        public int Id { get; set; }
-
-        [XmlAttribute("PostTypeId")]
-        public int PostTypeId { get; set; }
-
-        [XmlAttribute("AcceptedAnswerId")]
-        public int AcceptedAnswerId { get; set; }
-
-        [XmlAttribute("Score")]
-        public int Score { get; set; }
-
-        [XmlAttribute("ViewCount")]
-        public int ViewCount { get; set; }
-
-        [XmlAttribute("Body")]
-        public string Body { get; set; }
-
-        [XmlAttribute("OwnerUserId")]
-        public int OwnerUserId { get; set; }
-
-        [XmlAttribute("LastEditorUserId")]
-        public int LastEditorUserId { get; set; }
-
-        [XmlAttribute("Title")]
-        public string Title { get; set; }
-
-        [XmlAttribute("AnswerCount")]
-        public int AnswerCount { get; set; }
-
-        [XmlAttribute("CommentCount")]
-        public int CommentCount { get; set; }
-
-        [XmlAttribute("FavoriteCount")]
-        public int FavoriteCount { get; set; }
-
-        [XmlAttribute("ContentLicense")]
-        public string ContentLicense { get; set; }
-    }
 }
