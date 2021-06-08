@@ -139,7 +139,6 @@ namespace ideal_giggle
             public DateTime CreationDate { get; set; }
         }
 
-
     }
 
     [XmlRoot("comments")]

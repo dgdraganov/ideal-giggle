@@ -20,18 +20,26 @@ namespace ideal_giggle
 
         public void AddPosts(Votes votes)
         {
+            // ar connectionString = "mongodb://localhost";
+
             var client = new MongoClient("mongodb+srv://<username>:<password>@<cluster-address>/test?w=majority");
             var db = client.GetDatabase("...databaseName...");
+
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.Capped = false;
+            
+            db.CreateCollection("posts", options);
+
             var postsCollection = db.GetCollection<Vote>("posts");
 
             var listWrites = votes.Rows
-                                    .Select(p => new InsertOneModel<Vote>(new Vote(){
-                                                                                    id = p.Id,
-                                                                                    postId = p.PostId,
-                                                                                    voteTypeId = p.VoteTypeId,
-                                                                                    creationDate = p.CreationDate,
-                                                                                }))
-                                    .ToList();
+                                  .Select(p => new InsertOneModel<Vote>(new Vote(){
+                                                                                        id = p.Id,
+                                                                                        postId = p.PostId,
+                                                                                        voteTypeId = p.VoteTypeId,
+                                                                                        creationDate = p.CreationDate,
+                                                                                  }))
+                                  .ToList();
 
 
             var resultWrites = postsCollection.BulkWriteAsync(listWrites).Result;
