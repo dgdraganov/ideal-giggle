@@ -24,6 +24,7 @@ namespace ideal_giggle
             var fileNameVotes =     @$"{dir}\Votes.xml";
             var fileNameComments =  @$"{dir}\Comments.xml";
 
+            // Adding to oracle tables
             OracleAdapter adapter = 
                 new OracleAdapter("... fakeConnectionString ...", "... KurecDb ...");
 
@@ -39,7 +40,9 @@ namespace ideal_giggle
             Comments comments = dm.DeserializeToObject<Comments>(fileNameComments);
             adapter.FillCommentsTable(comments);
 
-       
+            // Adding to mongo tables
+            MongoAdapter ma = new MongoAdapter("...fakeConnectionString...");
+            ma.AddVotes(dm.DeserializeToObject<Votes>(fileNameVotes));
 
 
         }

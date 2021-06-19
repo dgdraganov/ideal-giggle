@@ -18,7 +18,7 @@ namespace ideal_giggle
             ConnectionString = connectionString;
         }
 
-        public void AddPosts(Votes votes)
+        public void AddVotes(Votes votes)
         {
             // ar connectionString = "mongodb://localhost";
 
