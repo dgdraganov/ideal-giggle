@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace ideal_giggle
 {
@@ -11,38 +13,43 @@ namespace ideal_giggle
          
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
-            DataManager dm = new DataManager("Users", "Posts", "Comments", "Votes");
+            string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes" };
+            DataManager dm = new DataManager(tableNames);
 
             var succ = dm.CheckIfDataExists(dir);
 
             if (!succ)
                 return;
 
-            // All files are present and the data loading may begin
-            var fileNamePosts =     @$"{dir}\Posts.xml";
-            var fileNameUsers =     @$"{dir}\Users.xml";
-            var fileNameVotes =     @$"{dir}\Votes.xml";
-            var fileNameComments =  @$"{dir}\Comments.xml";
+            
+            Dictionary<string, string> fileNames = tableNames.ToDictionary(x => x, x => $"{dir}\\{x}.xml");
+
+
 
             // Adding to oracle tables
-            OracleAdapter adapter = 
-                new OracleAdapter("... fakeConnectionString ...", "... KurecDb ...");
+            OracleAdapter adapter =
+            new OracleAdapter();
 
-            Posts posts = dm.DeserializeToObject<Posts>(fileNamePosts);
-            adapter.FillPostsTable(posts);
 
-            Users users = dm.DeserializeToObject<Users>(fileNameUsers);
-            adapter.FillUsersTable(users);
+            //Posts posts = dm.DeserializeToObject<Posts>(fileNamePosts);
+            //adapter.FillPostsTable(posts);
 
-            Votes votes = dm.DeserializeToObject<Votes>(fileNameVotes);
+            //Users users = dm.DeserializeToObject<Users>(fileNameUsers);
+            //adapter.FillUsersTable(users);
+
+            Votes votes = dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
             adapter.FillVotesTable(votes);
 
-            Comments comments = dm.DeserializeToObject<Comments>(fileNameComments);
-            adapter.FillCommentsTable(comments);
+            //Comments comments = dm.DeserializeToObject<Comments>(fileNameComments);
+            //adapter.FillCommentsTable(comments);
+
+
+
+
 
             // Adding to mongo tables
-            MongoAdapter ma = new MongoAdapter("...fakeConnectionString...");
-            ma.AddVotes(dm.DeserializeToObject<Votes>(fileNameVotes));
+            //MongoAdapter ma = new MongoAdapter("mongodb://127.0.0.1:27017");
+            //ma.AddVotes(dm.DeserializeToObject<Votes>(fileNameVotes));
 
 
         }

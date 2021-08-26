@@ -7,7 +7,7 @@ namespace ideal_giggle
 {
     public class DataManager
     {
-        public DataManager(params string[] fileNames)
+        public DataManager(string[] fileNames)
         {
             FileNames = fileNames;
         }

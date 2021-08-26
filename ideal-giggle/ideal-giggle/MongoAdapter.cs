@@ -20,10 +20,9 @@ namespace ideal_giggle
 
         public void AddVotes(Votes votes)
         {
-            // ar connectionString = "mongodb://localhost";
 
-            var client = new MongoClient("mongodb+srv://<username>:<password>@<cluster-address>/test?w=majority");
-            var db = client.GetDatabase("...databaseName...");
+            var client = new MongoClient(ConnectionString);
+            var db = client.GetDatabase("mylib");
 
             CreateCollectionOptions options = new CreateCollectionOptions();
             options.Capped = false;
