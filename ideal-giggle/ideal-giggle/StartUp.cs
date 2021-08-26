@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -23,31 +24,42 @@ namespace ideal_giggle
             
             Dictionary<string, string> fileNames = tableNames.ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
+            Posts posts =       dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            Users users =       dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
+            Votes votes =       dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
+            Comments comments = dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
+
+
+            Stopwatch sw = new Stopwatch();
+
+
             // Inserting to Oracle DB
             OracleAdapter adapter =
             new OracleAdapter();
 
-            Posts posts = dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            sw.Start();
             adapter.FillPostsTable(posts);
-
-            Users users = dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
             adapter.FillUsersTable(users);
-
-            Votes votes = dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
             adapter.FillVotesTable(votes);
-
-            Comments comments = dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
             adapter.FillCommentsTable(comments);
 
+            sw.Stop();
+            ConsolePrinter.PrintLine($"All data filled to the Oracle DB! Time required for all data to be inserted: {sw.Elapsed}");
+            sw.Reset();
 
 
-            // Adding to mongo tables
+
+            // Inserting to Мongo DB
             MongoAdapter ma = new MongoAdapter();
+
+            sw.Start();
             ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
             ma.FillUsersTable(dm.DeserializeToObject<Users>(fileNames[nameof(Users)]));
-
             ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
             ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
+            sw.Stop();
+
+            ConsolePrinter.PrintLine($"All data filled to the Mongo DB! Time required for all data to be inserted: {sw.Elapsed}");
 
 
         }

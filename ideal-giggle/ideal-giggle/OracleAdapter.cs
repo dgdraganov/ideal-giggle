@@ -227,6 +227,8 @@ namespace ideal_giggle
                         bulkCopy.WriteToServer(dTable);
                     }
                 }
+
+                ConsolePrinter.PrintLine($"Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
             }
             catch (Exception ex)
             {

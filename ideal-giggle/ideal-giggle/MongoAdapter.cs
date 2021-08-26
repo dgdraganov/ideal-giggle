@@ -35,10 +35,9 @@ namespace ideal_giggle
                                   .Select(p => new InsertOneModel<Vote>(new Vote(p)))
                                   .ToList();
 
-
             var resultWrites = postsCollection.BulkWriteAsync(listWrites).Result;
 
-            Console.WriteLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}");
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
         }
 
         public void FillCommentsTable(Comments commentsTable)
@@ -59,10 +58,9 @@ namespace ideal_giggle
                                   .Select(p => new InsertOneModel<Comment>(new Comment(p)))
                                   .ToList();
 
-
             var resultWrites = commentsCollection.BulkWriteAsync(listWrites).Result;
 
-            Console.WriteLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}");
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
         }
 
         public void FillUsersTable(Users usersTable)
@@ -84,10 +82,9 @@ namespace ideal_giggle
                                             new InsertOneModel<User>(new User(p)))
                                   .ToList();
 
-
             var resultWrites = commentsCollection.BulkWriteAsync(listWrites).Result;
 
-            Console.WriteLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}");
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
         }
 
         public void FillPostsTable(Posts postsTable)
@@ -108,10 +105,9 @@ namespace ideal_giggle
                                   .Select(p => new InsertOneModel<Post>(new Post(p)))
                                   .ToList();
 
-
             var resultWrites = postsCollection.BulkWriteAsync(listWrites).Result;
 
-            Console.WriteLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}");
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
         }
 
 
