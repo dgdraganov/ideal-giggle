@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 using Oracle.ManagedDataAccess.Client;
 
 namespace ideal_giggle
 {
     public class OracleAdapter
     {
-
-
-        // One way of inserting bulk data to Oracle db
-        public void FillVotesTable(Votes users)
+        private string ConnectionString { get; }
+        public OracleAdapter()
         {
-            string targetTable = nameof(Votes);
+            OracleConfiguration.OracleDataSources.Add("orclpdb1",
+               "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1)))");
 
+            ConnectionString = "user id=NIKI; password=niki; data source=orclpdb1";
+        }
+
+        public void FillVotesTable(Votes votesTable)
+        {
             DataTable dTable = new DataTable();
             dTable.Columns.Add("Id");
             dTable.Columns.Add("PostId");
@@ -28,7 +24,7 @@ namespace ideal_giggle
             dTable.Columns.Add("CreationDate");
 
 
-            var votes = users.Rows;
+            var votes = votesTable.Rows;
             foreach (var vote in votes)
             {
                 DataRow dRow = dTable.NewRow();
@@ -40,34 +36,10 @@ namespace ideal_giggle
                 dTable.Rows.Add(dRow);
             }
 
-            OracleConfiguration.OracleDataSources.Add("orclpdb1", 
-                "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1)))");
-
-
-            try
-            {
-                using (var connection = new OracleConnection("user id=NIKI; password=niki; data source=orclpdb1"))
-                {
-                    connection.Open();
-                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
-                    {
-                        bulkCopy.DestinationTableName = targetTable;
-                        bulkCopy.BulkCopyTimeout = 600;
-                        foreach (DataColumn dtColumn in dTable.Columns)
-                        {
-                            bulkCopy.ColumnMappings.Add(dtColumn.ColumnName, dtColumn.ColumnName.ToUpper());
-                        }
-                        bulkCopy.WriteToServer(dTable);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ConsolePrinter.PrintLine($"Method {nameof(FillVotesTable)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
-                return;
-            }
+            BulkCopyToDb(nameof(Votes), dTable);
 
         }
+
 
         // Second way of inserting bulk data to Oracledb
         //public void FillVotesTable2(Votes users)
@@ -117,34 +89,151 @@ namespace ideal_giggle
         //}
 
 
-
-        public void FillPostsTable(Posts posts)
+        public void FillPostsTable(Posts postsTable)
         {
-            string targetTable = nameof(Posts);
+
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id");
+            dTable.Columns.Add("PostTypeId");
+            dTable.Columns.Add("AcceptedAnswerId");
+            dTable.Columns.Add("Score");
+            dTable.Columns.Add("ViewCount");
+            dTable.Columns.Add("Body");
+            dTable.Columns.Add("OwnerUserId");
+            dTable.Columns.Add("LastEditorUserId");
+            dTable.Columns.Add("Title");
+            dTable.Columns.Add("Tags");
+            dTable.Columns.Add("AnswerCount");
+            dTable.Columns.Add("CommentCount");
+            dTable.Columns.Add("FavoriteCount");
+            dTable.Columns.Add("ContentLicense");
+            dTable.Columns.Add("CreationDate");
+            dTable.Columns.Add("LastActivityDate");
+            dTable.Columns.Add("LastEditDate");
 
 
+            var posts = postsTable.Rows;
+            foreach (var post in posts)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = post.Id;
+                dRow["PostTypeId"] = post.PostTypeId;
+                dRow["AcceptedAnswerId"] = post.AcceptedAnswerId;
+                dRow["Score"] = post.Score;
+                dRow["ViewCount"] = post.ViewCount;
+                dRow["Body"] = post.Body;
+                dRow["OwnerUserId"] = post.OwnerUserId;
+                dRow["LastEditorUserId"] = post.LastEditorUserId;
+                dRow["Title"] = post.Title;
+                dRow["Tags"] = post.Tags;
+                dRow["AnswerCount"] = post.AnswerCount;
+                dRow["CommentCount"] = post.CommentCount;
+                dRow["FavoriteCount"] = post.FavoriteCount;
+                dRow["ContentLicense"] = post.ContentLicense;
+                dRow["CreationDate"] = post.CreationDate;
+                dRow["LastActivityDate"] = post.LastActivityDate;
+                dRow["LastEditDate"] = post.LastEditDate;
 
+                dTable.Rows.Add(dRow);
+            }
 
+            BulkCopyToDb(nameof(Posts), dTable);
+
+        }
+        public void FillUsersTable(Users usersTable)
+        {
+
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id");
+            dTable.Columns.Add("Reputation");
+            dTable.Columns.Add("CreationDate");
+            dTable.Columns.Add("DisplayName");
+            dTable.Columns.Add("LastAccessDate");
+            dTable.Columns.Add("WebsiteUrl");
+            dTable.Columns.Add("Location");
+            dTable.Columns.Add("AboutMe");
+            dTable.Columns.Add("Views");
+            dTable.Columns.Add("UpVotes");
+            dTable.Columns.Add("DownVotes");
+            dTable.Columns.Add("AccountId");
+
+            var users = usersTable.Rows;
+            foreach (var user in users)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = user.Id;
+                dRow["Reputation"] = user.Reputation;
+                dRow["CreationDate"] = user.CreationDate;
+                dRow["DisplayName"] = user.DisplayName;
+                dRow["LastAccessDate"] = user.LastAccessDate;
+                dRow["WebsiteUrl"] = user.WebsiteUrl;
+                dRow["Location"] = user.Location;
+                dRow["AboutMe"] = user.AboutMe;
+                dRow["Views"] = user.Views;
+                dRow["UpVotes"] = user.UpVotes;
+                dRow["DownVotes"] = user.DownVotes;
+                dRow["AccountId"] = user.AccountId;
+
+                dTable.Rows.Add(dRow);
+            }
+
+            BulkCopyToDb(nameof(Users), dTable);
         }
 
 
 
-
-
-        public void FillUsersTable(Users users)
+        public void FillCommentsTable(Comments commentsTable)
         {
-            string targetTable = nameof(Users);
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id");
+            dTable.Columns.Add("PostId");
+            dTable.Columns.Add("Score");
+            dTable.Columns.Add("Text");
+            dTable.Columns.Add("CreationDate");
+            dTable.Columns.Add("UserId");
+            dTable.Columns.Add("ContentLicense");
 
+            var comments = commentsTable.Rows;
+            foreach (var comment in comments)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = comment.Id;
+                dRow["PostId"] = comment.PostId;
+                dRow["Score"] = comment.Score;
+                dRow["Text"] = comment.Text;
+                dRow["CreationDate"] = comment.CreationDate;
+                dRow["UserId"] = comment.UserId;
+                dRow["ContentLicense"] = comment.ContentLicense;
+
+                dTable.Rows.Add(dRow);
+            }
         }
 
-
-
-        public void FillCommentsTable(Comments users)
+        private void BulkCopyToDb(string targetTable, DataTable dTable)
         {
-            string targetTable = nameof(Comments);
-
-
-
+            try
+            {
+                using (var connection = new OracleConnection(ConnectionString))
+                {
+                    connection.Open();
+                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
+                    {
+                        bulkCopy.DestinationTableName = targetTable;
+                        bulkCopy.BulkCopyTimeout = 600;
+                        foreach (DataColumn dtColumn in dTable.Columns)
+                        {
+                            bulkCopy.ColumnMappings.Add(dtColumn.ColumnName, dtColumn.ColumnName.ToUpper());
+                        }
+                        bulkCopy.WriteToServer(dTable);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsolePrinter.PrintLine($"Method {nameof(FillVotesTable)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
+                ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
+                return;
+            }
         }
     }
 

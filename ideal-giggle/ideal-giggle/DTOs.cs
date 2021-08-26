@@ -42,6 +42,7 @@ namespace ideal_giggle
 
             [XmlAttribute("Title")]
             public string Title { get; set; }
+
             [XmlAttribute("Tags")]
             public string Tags { get; set; }
 
@@ -62,7 +63,6 @@ namespace ideal_giggle
 
             [XmlAttribute("LastActivityDate")]
             public DateTime LastActivityDate { get; set; }
-
 
             [XmlAttribute("LastEditDate")]
             public DateTime LastEditDate { get; set; }

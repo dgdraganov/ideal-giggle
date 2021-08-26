@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -24,32 +23,31 @@ namespace ideal_giggle
             
             Dictionary<string, string> fileNames = tableNames.ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
-
-
-            // Adding to oracle tables
+            // Inserting to Oracle DB
             OracleAdapter adapter =
             new OracleAdapter();
 
+            Posts posts = dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            adapter.FillPostsTable(posts);
 
-            //Posts posts = dm.DeserializeToObject<Posts>(fileNamePosts);
-            //adapter.FillPostsTable(posts);
-
-            //Users users = dm.DeserializeToObject<Users>(fileNameUsers);
-            //adapter.FillUsersTable(users);
+            Users users = dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
+            adapter.FillUsersTable(users);
 
             Votes votes = dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
             adapter.FillVotesTable(votes);
 
-            //Comments comments = dm.DeserializeToObject<Comments>(fileNameComments);
-            //adapter.FillCommentsTable(comments);
-
-
+            Comments comments = dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
+            adapter.FillCommentsTable(comments);
 
 
 
             // Adding to mongo tables
-            //MongoAdapter ma = new MongoAdapter("mongodb://127.0.0.1:27017");
-            //ma.AddVotes(dm.DeserializeToObject<Votes>(fileNameVotes));
+            MongoAdapter ma = new MongoAdapter();
+            ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
+            ma.FillUsersTable(dm.DeserializeToObject<Users>(fileNames[nameof(Users)]));
+
+            ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
+            ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
 
 
         }
