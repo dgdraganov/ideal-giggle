@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace ideal_giggle
 {
@@ -10,7 +11,7 @@ namespace ideal_giggle
     {
         static void Main(string[] args)
         {
-         
+
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
             string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes" };
@@ -22,7 +23,6 @@ namespace ideal_giggle
             if (!succ)
                 return;
 
-            
             Dictionary<string, string> fileNames = tableNames.ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
             Posts posts =       dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
@@ -57,7 +57,7 @@ namespace ideal_giggle
             ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
             ma.FillUsersTable(dm.DeserializeToObject<Users>(fileNames[nameof(Users)]));
             ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
-            ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
+            ma.FillCommentsTable(dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]));
             sw.Stop();
 
             ConsolePrinter.PrintLine($"All data filled to the Mongo DB! Time required for all data to be inserted: {sw.Elapsed}");

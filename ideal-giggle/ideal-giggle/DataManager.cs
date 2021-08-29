@@ -43,13 +43,13 @@ namespace ideal_giggle
             return true;
         }
 
-        public T DeserializeToObject<T>(string fileNamePosts) where T : class
+        public T DeserializeToObject<T>(string fileName) where T : class
         {
             XmlSerializer serializer =
                    new XmlSerializer(typeof(T));
 
             T obj;
-            using (Stream reader = File.OpenRead(fileNamePosts))
+            using (Stream reader = File.OpenRead(fileName))
             {
                 obj = (T)serializer.Deserialize(reader);
             }
