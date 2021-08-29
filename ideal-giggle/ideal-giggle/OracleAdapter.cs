@@ -37,57 +37,49 @@ namespace ideal_giggle
             }
 
             BulkCopyToDb(nameof(Votes), dTable);
-
         }
 
+        public void FillUsersBadgesTable(UsersBadges usersBadgesTable)
+        {
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("UserId", typeof(int));
+            dTable.Columns.Add("BadgeId", typeof(int));
+            dTable.Columns.Add("Date", typeof(DateTime));
 
-        // Second way of inserting bulk data to Oracledb
-        //public void FillVotesTable2(Votes users)
-        //{
-        //    int[] ids = users.Rows.Select(r => r.Id).ToArray();
-        //    int[] postIds = users.Rows.Select(r => r.PostId).ToArray();
-        //    int[] voteTypeIds = users.Rows.Select(r => r.VoteTypeId).ToArray();
-        //    DateTime[] creationDates = users.Rows.Select(r => r.CreationDate).ToArray();
+            var usersBadges = usersBadgesTable.Rows;
+            foreach (var userBadge in usersBadges)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = userBadge.Id;
+                dRow["UserId"] = userBadge.UserId;
+                dRow["BadgeId"] = userBadge.BadgeId;
+                dRow["Date"] = userBadge.Date;
 
-        //    OracleParameter id = new OracleParameter();
-        //    id.OracleDbType = OracleDbType.Int32;
-        //    id.Value = ids;
+                dTable.Rows.Add(dRow);
+            }
 
-        //    OracleParameter postId = new OracleParameter();
-        //    postId.OracleDbType = OracleDbType.Int32;
-        //    postId.Value = postIds;
+            BulkCopyToDb(nameof(UsersBadges), dTable);
+        }
 
-        //    OracleParameter voteTypeId = new OracleParameter();
-        //    voteTypeId.OracleDbType = OracleDbType.Int32;
-        //    voteTypeId.Value = voteTypeIds;
+        public void FillBadgesTable(Badges badgesTable)
+        {
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("Name", typeof(string));
 
-        //    OracleParameter creationDate = new OracleParameter();
-        //    creationDate.OracleDbType = OracleDbType.TimeStamp;
-        //    creationDate.Value = creationDates;
+            var badges = badgesTable.Rows;
+            foreach (var badge in badges)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = badge.Id;
+                dRow["Name"] = badge.Name;
 
+                dTable.Rows.Add(dRow);
+            }
 
-
-        //    OracleConnection connection = new OracleConnection(ConnectionString);
-        //    connection.Open();
-
-        //    OracleCommand cmd = new OracleCommand();
-        //    cmd.Connection = connection;
-        //    cmd.CommandText = $"insert into {DbName}.Comments ( ID, POSTID, VOTETYPEID, CREATIONDATE) " +
-        //                                             $"values ( :1, :2, :3, :4 )";
-        //    cmd.ArrayBindCount = ids.Length;
-        //    cmd.Parameters.Add(id);
-        //    cmd.Parameters.Add(postId);
-        //    cmd.Parameters.Add(voteTypeId);
-        //    cmd.Parameters.Add(creationDate);
-
-        //    cmd.ExecuteNonQuery();
-        //}
-
-
-        //public void FillVotesTable3(Votes users)
-        //{
-        //}
-
+            BulkCopyToDb(nameof(Badges), dTable);
+        }
 
         public void FillPostsTable(Posts postsTable)
         {

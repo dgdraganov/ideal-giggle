@@ -7,6 +7,44 @@ using System.Xml.Serialization;
 
 namespace ideal_giggle
 {
+    [XmlRoot("badges")]
+    public class Badges
+    {
+        [XmlElement("row")]
+        public List<Row> Rows { get; set; }
+
+        public class Row
+        {
+            [XmlAttribute("Id")]
+            public int Id { get; set; }
+
+            [XmlAttribute("Name")]
+            public string Name { get; set; }
+        }
+    }
+
+    [XmlRoot("badges")]
+    public class UsersBadges
+    {
+        [XmlElement("row")]
+        public List<Row> Rows { get; set; }
+
+        public class Row
+        {
+            [XmlAttribute("Id")]
+            public int Id { get; set; }
+
+            [XmlAttribute("UserId")]
+            public int UserId { get; set; }
+
+            [XmlAttribute("BadgeId")]
+            public int BadgeId { get; set; }
+
+            [XmlAttribute("Date")]
+            public DateTime Date { get; set; }
+        }
+    }
+
 
     [XmlRoot("posts")]
     public class Posts

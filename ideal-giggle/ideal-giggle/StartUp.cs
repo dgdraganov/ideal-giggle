@@ -14,7 +14,7 @@ namespace ideal_giggle
 
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
-            string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes" };
+            string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes", "UsersBadges"};
 
             DataManager dm = new DataManager(tableNames);
 
@@ -23,13 +23,15 @@ namespace ideal_giggle
             if (!succ)
                 return;
 
-            Dictionary<string, string> fileNames = tableNames.ToDictionary(x => x, x => $"{dir}\\{x}.xml");
+            Dictionary<string, string> fileNames = tableNames
+                                                    .ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
-            Posts posts =       dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
-            Users users =       dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
-            Votes votes =       dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
-            Comments comments = dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
-
+            Posts posts =               dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            Users users =               dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
+            Votes votes =               dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
+            Comments comments =         dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
+            UsersBadges usersBadges =   dm.DeserializeToObject<UsersBadges>(fileNames[nameof(UsersBadges)]);
+            Badges badges =             dm.DeserializeToObject<Badges>(fileNames[nameof(Badges)]);
 
             Stopwatch sw = new Stopwatch();
 
@@ -43,12 +45,12 @@ namespace ideal_giggle
             adapter.FillUsersTable(users);
             adapter.FillVotesTable(votes);
             adapter.FillCommentsTable(comments);
+            adapter.FillUsersBadgesTable(usersBadges);
+            adapter.FillBadgesTable(badges);
 
             sw.Stop();
             ConsolePrinter.PrintLine($"All data filled to the Oracle DB! Time required for all data to be inserted: {sw.Elapsed}");
             sw.Reset();
-
-
 
             // Inserting to Мongo DB
             MongoAdapter ma = new MongoAdapter();
