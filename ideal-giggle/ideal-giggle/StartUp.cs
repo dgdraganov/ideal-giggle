@@ -14,7 +14,7 @@ namespace ideal_giggle
 
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
-            string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes", "UsersBadges"};
+            string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", "UsersBadges", "Badges", "Tags" };
 
             DataManager dm = new DataManager(tableNames);
 
@@ -26,7 +26,7 @@ namespace ideal_giggle
             Dictionary<string, string> fileNames = tableNames
                                                     .ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
-            Posts posts =               dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            //Posts posts =               dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
             Users users =               dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
             Votes votes =               dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
             Comments comments =         dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
@@ -41,7 +41,7 @@ namespace ideal_giggle
             new OracleAdapter();
 
             sw.Start();
-            adapter.FillPostsTable(posts);
+            //adapter.FillPostsTable(posts);
             adapter.FillUsersTable(users);
             adapter.FillVotesTable(votes);
             adapter.FillCommentsTable(comments);

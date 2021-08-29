@@ -23,6 +23,25 @@ namespace ideal_giggle
         }
     }
 
+    [XmlRoot("tags")]
+    public class Tags
+    {
+        [XmlElement("row")]
+        public List<Row> Rows { get; set; }
+
+        public class Row
+        {
+            [XmlAttribute("Id")]
+            public int Id { get; set; }
+
+            [XmlAttribute("TagName")]
+            public string TagName { get; set; }
+
+            [XmlAttribute("Count")]
+            public int Count { get; set; }
+        }
+    }
+
     [XmlRoot("badges")]
     public class UsersBadges
     {

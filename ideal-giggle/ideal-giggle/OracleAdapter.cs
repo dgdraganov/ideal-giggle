@@ -81,6 +81,27 @@ namespace ideal_giggle
             BulkCopyToDb(nameof(Badges), dTable);
         }
 
+        public void FillTagsTable(Tags tagsTable)
+        {
+            DataTable dTable = new DataTable();
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("TagName", typeof(string));
+            dTable.Columns.Add("Count", typeof(int));
+
+            var tags = tagsTable.Rows;
+            foreach (var tag in tags)
+            {
+                DataRow dRow = dTable.NewRow();
+                dRow["Id"] = tag.Id;
+                dRow["TagName"] = tag.TagName;
+                dRow["Count"] = tag.Count;
+
+                dTable.Rows.Add(dRow);
+            }
+
+            BulkCopyToDb(nameof(Tags), dTable);
+        }
+
         public void FillPostsTable(Posts postsTable)
         {
             DataTable dTable = new DataTable();
