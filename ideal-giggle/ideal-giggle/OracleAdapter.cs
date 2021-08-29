@@ -18,10 +18,10 @@ namespace ideal_giggle
         public void FillVotesTable(Votes votesTable)
         {
             DataTable dTable = new DataTable();
-            dTable.Columns.Add("Id");
-            dTable.Columns.Add("PostId");
-            dTable.Columns.Add("VoteTypeId");
-            dTable.Columns.Add("CreationDate");
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("PostId", typeof(int));
+            dTable.Columns.Add("VoteTypeId", typeof(int));
+            dTable.Columns.Add("CreationDate", typeof(DateTime));
 
 
             var votes = votesTable.Rows;
@@ -91,25 +91,24 @@ namespace ideal_giggle
 
         public void FillPostsTable(Posts postsTable)
         {
-
             DataTable dTable = new DataTable();
-            dTable.Columns.Add("Id");
-            dTable.Columns.Add("PostTypeId");
-            dTable.Columns.Add("AcceptedAnswerId");
-            dTable.Columns.Add("Score");
-            dTable.Columns.Add("ViewCount");
-            dTable.Columns.Add("Body");
-            dTable.Columns.Add("OwnerUserId");
-            dTable.Columns.Add("LastEditorUserId");
-            dTable.Columns.Add("Title");
-            dTable.Columns.Add("Tags");
-            dTable.Columns.Add("AnswerCount");
-            dTable.Columns.Add("CommentCount");
-            dTable.Columns.Add("FavoriteCount");
-            dTable.Columns.Add("ContentLicense");
-            dTable.Columns.Add("CreationDate");
-            dTable.Columns.Add("LastActivityDate");
-            dTable.Columns.Add("LastEditDate");
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("PostTypeId", typeof(int));
+            dTable.Columns.Add("AcceptedAnswerId", typeof(int));
+            dTable.Columns.Add("Score", typeof(int));
+            dTable.Columns.Add("ViewCount", typeof(int));
+            dTable.Columns.Add("Body", typeof(string));
+            dTable.Columns.Add("OwnerUserId", typeof(int));
+            dTable.Columns.Add("LastEditorUserId", typeof(int));
+            dTable.Columns.Add("Title", typeof(string));
+            dTable.Columns.Add("Tags", typeof(string));
+            dTable.Columns.Add("AnswerCount", typeof(int));
+            dTable.Columns.Add("CommentCount", typeof(int));
+            dTable.Columns.Add("FavoriteCount", typeof(int));
+            dTable.Columns.Add("ContentLicense", typeof(string));
+            dTable.Columns.Add("CreationDate", typeof(DateTime));
+            dTable.Columns.Add("LastActivityDate", typeof(DateTime));
+            dTable.Columns.Add("LastEditDate", typeof(DateTime));
 
 
             var posts = postsTable.Rows;
@@ -144,18 +143,18 @@ namespace ideal_giggle
         {
 
             DataTable dTable = new DataTable();
-            dTable.Columns.Add("Id");
-            dTable.Columns.Add("Reputation");
-            dTable.Columns.Add("CreationDate");
-            dTable.Columns.Add("DisplayName");
-            dTable.Columns.Add("LastAccessDate");
-            dTable.Columns.Add("WebsiteUrl");
-            dTable.Columns.Add("Location");
-            dTable.Columns.Add("AboutMe");
-            dTable.Columns.Add("Views");
-            dTable.Columns.Add("UpVotes");
-            dTable.Columns.Add("DownVotes");
-            dTable.Columns.Add("AccountId");
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("Reputation", typeof(int));
+            dTable.Columns.Add("CreationDate", typeof(DateTime));
+            dTable.Columns.Add("DisplayName", typeof(string));
+            dTable.Columns.Add("LastAccessDate", typeof(DateTime));
+            dTable.Columns.Add("WebsiteUrl", typeof(string));
+            dTable.Columns.Add("Location", typeof(string));
+            dTable.Columns.Add("AboutMe", typeof(string));
+            dTable.Columns.Add("Views", typeof(int));
+            dTable.Columns.Add("UpVotes", typeof(int));
+            dTable.Columns.Add("DownVotes", typeof(int));
+            dTable.Columns.Add("AccountId", typeof(int));
 
             var users = usersTable.Rows;
             foreach (var user in users)
@@ -185,13 +184,13 @@ namespace ideal_giggle
         public void FillCommentsTable(Comments commentsTable)
         {
             DataTable dTable = new DataTable();
-            dTable.Columns.Add("Id");
-            dTable.Columns.Add("PostId");
-            dTable.Columns.Add("Score");
-            dTable.Columns.Add("Text");
-            dTable.Columns.Add("CreationDate");
-            dTable.Columns.Add("UserId");
-            dTable.Columns.Add("ContentLicense");
+            dTable.Columns.Add("Id", typeof(int));
+            dTable.Columns.Add("PostId", typeof(int));
+            dTable.Columns.Add("Score", typeof(int));
+            dTable.Columns.Add("Text", typeof(string));
+            dTable.Columns.Add("CreationDate", typeof(DateTime));
+            dTable.Columns.Add("UserId", typeof(int));
+            dTable.Columns.Add("ContentLicense", typeof(string));
 
             var comments = commentsTable.Rows;
             foreach (var comment in comments)
@@ -207,6 +206,8 @@ namespace ideal_giggle
 
                 dTable.Rows.Add(dRow);
             }
+
+            BulkCopyToDb(nameof(Comments), dTable);
         }
 
         private void BulkCopyToDb(string targetTable, DataTable dTable)

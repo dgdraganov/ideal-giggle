@@ -14,6 +14,7 @@ namespace ideal_giggle
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
             string[] tableNames = new string[] { "Users", "Posts", "Comments", "Votes" };
+
             DataManager dm = new DataManager(tableNames);
 
             var succ = dm.CheckIfDataExists(dir);
