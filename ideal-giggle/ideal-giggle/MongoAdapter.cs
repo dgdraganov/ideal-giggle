@@ -110,7 +110,124 @@ namespace ideal_giggle
             ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
         }
 
+        public void FillBadgesTable(Badges badgesTable)
+        {
+            string collectionName = nameof(Badges).ToLower();
 
+            var client = new MongoClient(ConnectionString);
+            var db = client.GetDatabase(DataBase);
+
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.Capped = false;
+
+            db.CreateCollection(collectionName, options);
+
+            var badgesCollection = db.GetCollection<Badge>(collectionName);
+
+            var listWrites = badgesTable.Rows
+                                  .Select(p => new InsertOneModel<Badge>(new Badge(p)))
+                                  .ToList();
+
+            var resultWrites = badgesCollection.BulkWriteAsync(listWrites).Result;
+
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
+        }
+
+        public void FillUsersBadgesTable(UsersBadges usersBadgesTable)
+        {
+            string collectionName = nameof(UsersBadges).ToLower();
+
+            var client = new MongoClient(ConnectionString);
+            var db = client.GetDatabase(DataBase);
+
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.Capped = false;
+
+            db.CreateCollection(collectionName, options);
+
+            var usersBadgesCollection = db.GetCollection<UserBadge>(collectionName);
+
+            var listWrites = usersBadgesTable.Rows
+                                  .Select(p => new InsertOneModel<UserBadge>(new UserBadge(p)))
+                                  .ToList();
+
+            var resultWrites = usersBadgesCollection.BulkWriteAsync(listWrites).Result;
+
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
+        }
+
+        public void FillTagsTable(Tags tagsTable)
+        {
+            string collectionName = nameof(Tags).ToLower();
+
+            var client = new MongoClient(ConnectionString);
+            var db = client.GetDatabase(DataBase);
+
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.Capped = false;
+
+            db.CreateCollection(collectionName, options);
+
+            var tagsCollection = db.GetCollection<Tag>(collectionName);
+
+            var listWrites = tagsTable.Rows
+                                  .Select(p => new InsertOneModel<Tag>(new Tag(p)))
+                                  .ToList();
+
+            var resultWrites = tagsCollection.BulkWriteAsync(listWrites).Result;
+
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
+        }
+
+
+        private class Tag
+        {
+            [BsonId] public ObjectId _id { get; set; }
+
+            public BsonInt32 id { get; set; }
+            public BsonString tagName { get; set; }
+            public BsonInt32 count { get; set; }
+
+            public Tag(Tags.Row row)
+            {
+                id = row.Id;
+                tagName = row.TagName;
+                count = row.Count;
+            }
+
+        }
+
+        private class UserBadge
+        {
+            [BsonId] public ObjectId _id { get; set; }
+            public BsonInt32 id { get; set; }
+            public BsonInt32 userId { get; set; }
+            public BsonInt32 badgeId { get; set; }
+            public BsonDateTime date { get; set; }
+
+            public UserBadge(UsersBadges.Row row)
+            {
+                id = row.Id;
+                userId = row.UserId;
+                badgeId = row.BadgeId;
+                date = row.Date;
+            }
+
+        }
+
+        private class Badge
+        {
+            [BsonId] public ObjectId _id { get; set; }
+            public BsonInt32 id { get; set; }
+            public BsonString name { get; set; }
+
+            public Badge(Badges.Row row)
+            {
+                id = row.Id;
+                name = row.Name;
+            }
+
+        }
         private class Vote
         {
             [BsonId] public ObjectId _id { get; set; }

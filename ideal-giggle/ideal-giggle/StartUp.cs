@@ -59,9 +59,13 @@ namespace ideal_giggle
 
             sw.Start();
             //ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
-            ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
-            ma.FillUsersTable(dm.DeserializeToObject<Users>(fileNames[nameof(Users)]));
-            ma.FillCommentsTable(dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]));
+            ma.FillVotesTable(votes);
+            ma.FillUsersTable(users);
+            ma.FillCommentsTable(comments);
+            ma.FillBadgesTable(badges);
+            ma.FillUsersBadgesTable(usersBadges);
+            ma.FillTagsTable(tags);
+
             sw.Stop();
 
             ConsolePrinter.PrintLine($"All data filled to the Mongo DB! Time required for all data to be inserted: {sw.Elapsed}");
