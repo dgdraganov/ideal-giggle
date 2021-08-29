@@ -32,6 +32,7 @@ namespace ideal_giggle
             Comments comments =         dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
             UsersBadges usersBadges =   dm.DeserializeToObject<UsersBadges>(fileNames[nameof(UsersBadges)]);
             Badges badges =             dm.DeserializeToObject<Badges>(fileNames[nameof(Badges)]);
+            Tags tags =                 dm.DeserializeToObject<Tags>(fileNames[nameof(Tags)]);
 
             Stopwatch sw = new Stopwatch();
 
@@ -47,6 +48,7 @@ namespace ideal_giggle
             adapter.FillCommentsTable(comments);
             adapter.FillUsersBadgesTable(usersBadges);
             adapter.FillBadgesTable(badges);
+            adapter.FillTagsTable(tags);
 
             sw.Stop();
             ConsolePrinter.PrintLine($"All data filled to the Oracle DB! Time required for all data to be inserted: {sw.Elapsed}");
@@ -56,14 +58,13 @@ namespace ideal_giggle
             MongoAdapter ma = new MongoAdapter();
 
             sw.Start();
+            //ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
             ma.FillVotesTable(dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]));
             ma.FillUsersTable(dm.DeserializeToObject<Users>(fileNames[nameof(Users)]));
-            ma.FillPostsTable(dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]));
             ma.FillCommentsTable(dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]));
             sw.Stop();
 
             ConsolePrinter.PrintLine($"All data filled to the Mongo DB! Time required for all data to be inserted: {sw.Elapsed}");
-
 
         }
     }
