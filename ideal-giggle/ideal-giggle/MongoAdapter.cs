@@ -18,7 +18,7 @@ namespace ideal_giggle
         public MongoAdapter()
         {
             ConnectionString = "mongodb://127.0.0.1:27017";
-            DataBase = "mylib";
+            DataBase = "MongoDB";
         }
 
         public void InsertToTable<T>(T table)
