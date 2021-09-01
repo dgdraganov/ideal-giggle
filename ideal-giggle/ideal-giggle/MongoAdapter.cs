@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -26,6 +27,8 @@ namespace ideal_giggle
 
         public void InsertToTable<T>(T table)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var tableType = table.GetType();
 
             string collectionName = tableType.Name.ToLower();
@@ -94,6 +97,10 @@ namespace ideal_giggle
                                                                             new[] { listToInsert.GetType(),
                                                                                 typeof(BulkWriteOptions),
                                                                                 typeof(CancellationToken) });
+            sw.Stop();
+            Console.WriteLine($"[DEBUG] time elapsed {sw.Elapsed}");
+
+
             // invoke BulkWriteAsync method
             var bulkWriteTask = bulkWriteAsyncMethod.Invoke(collectionResult,
                                                                 new object[] {
@@ -109,7 +116,7 @@ namespace ideal_giggle
             var isAcknowledged = bulkWriteResultType.GetProperty("IsAcknowledged", BindingFlags.Instance | BindingFlags.Public).GetValue(bulkWriteResult);
             var insertedCount = bulkWriteResultType.GetProperty("InsertedCount", BindingFlags.Instance | BindingFlags.Public).GetValue(bulkWriteResult);
 
-            ConsolePrinter.PrintLine($"OK?: {isAcknowledged} - Inserted Count: {insertedCount}", ConsoleColor.Green);
+            ConsolePrinter.PrintLine($"Mongo DB -> OK?: {isAcknowledged} - Inserted Count: {insertedCount}", ConsoleColor.Green);
         }
 
         private bool CollectionExists(IMongoDatabase database, string collectionName)

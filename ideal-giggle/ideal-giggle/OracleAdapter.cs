@@ -72,7 +72,7 @@ namespace ideal_giggle
                     }
                 }
 
-                ConsolePrinter.PrintLine($"Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
+                ConsolePrinter.PrintLine($"Oracle DB -> Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
             }
             catch (Exception ex)
             {

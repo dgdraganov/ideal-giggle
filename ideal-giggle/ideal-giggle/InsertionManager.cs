@@ -53,6 +53,7 @@ namespace ideal_giggle
 
             foreach (var table in fileNames.Keys)
             {
+                Console.WriteLine($"================ {table} ================");
                 var typeOfTable = Assembly.GetExecutingAssembly().GetType($"ideal_giggle.{table}", true);
                 var filePath = fileNames[table];
                 insertDataMethod.MakeGenericMethod(new[] { typeOfTable })
@@ -70,10 +71,11 @@ namespace ideal_giggle
             const int MAX_LINES_TO_INSERT = 10_000_000;
 
             int totalRowsRead = 0;
+
             while (totalRowsRead < MAX_LINES_TO_INSERT)
             {
                 T data = DataManager.DeserializeByChunks<T>(filePath,
-                                                             totalRowsRead
+                                                             totalRowsRead,
                                                              SIZE_OF_CHUNK);
                 
                 // If nothing to process - break
@@ -88,12 +90,12 @@ namespace ideal_giggle
                     adapter.InsertToTable<T>(data);
                     sw.Stop();
 
-                    var adapterName = adapter.GetType().Name;
+                    var adapterName = adapter.Name;
                     var tableName = typeof(T).Name;
 
                     Measurements[adapterName][tableName] += sw.ElapsedMilliseconds;
                 }
-
+                Console.WriteLine("-----------------------------");
                 totalRowsRead += rowsRead;
             }
         }
