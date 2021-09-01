@@ -28,10 +28,13 @@ namespace ideal_giggle
             string collectionName = tableType.Name.ToLower();
             var client = new MongoClient(ConnectionString);
             var db = client.GetDatabase(DataBase);
-            CreateCollectionOptions options = new CreateCollectionOptions();
-            options.Capped = false;
 
-            db.CreateCollection(collectionName, options);
+            if (!CollectionExists(db, collectionName))
+            {
+                CreateCollectionOptions options = new CreateCollectionOptions();
+                options.Capped = false;
+                db.CreateCollection(collectionName, options);
+            }
 
             //=======================================
             // Get Vote dynamically based on Votes (actial generic T) 
@@ -105,8 +108,14 @@ namespace ideal_giggle
 
             ConsolePrinter.PrintLine($"OK?: {isAcknowledged} - Inserted Count: {insertedCount}", ConsoleColor.Green);
         }
-        
 
+        private bool CollectionExists(IMongoDatabase database, string collectionName)
+        {
+            var filter = new BsonDocument("name", collectionName);
+            var options = new ListCollectionNamesOptions { Filter = filter };
+
+            return database.ListCollectionNames(options).Any();
+        }
 
         private class Tag
         {

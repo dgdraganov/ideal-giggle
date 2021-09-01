@@ -14,12 +14,13 @@ namespace ideal_giggle
         {
             DataManager = new DataManager(tables);
             DbAdapters = adapters;
+            Measurements = new Dictionary<string, Dictionary<string, long>>();
             Initialize();
         }
 
         public DataManager DataManager { get; }
         public IDbAdapter[] DbAdapters { get; }
-        public IDictionary<string, IDictionary<string, long>> Measurements { get; }
+        public Dictionary<string, Dictionary<string, long>> Measurements { get; }
 
         public void FillDatabases()
         {
@@ -76,6 +77,7 @@ namespace ideal_giggle
             if (!succ)
                 return;
 
+          
             foreach (var adapt in DbAdapters)
             {
                 var adapterTypeName = adapt.GetType().Name;
