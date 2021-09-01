@@ -143,7 +143,7 @@ namespace ideal_giggle
             }
         }
 
-        private class UserBadge
+        private class UsersBadge
         {
             [BsonId] public ObjectId _id { get; set; }
             public BsonValue id { get; set; }
@@ -151,7 +151,7 @@ namespace ideal_giggle
             public BsonValue badgeId { get; set; }
             public BsonValue date { get; set; }
 
-            public UserBadge(UsersBadges.Row row)
+            public UsersBadge(UsersBadges.Row row)
             {
                 id = BsonValue.Create(row.Id);
                 userId = BsonValue.Create(row.UserId);
