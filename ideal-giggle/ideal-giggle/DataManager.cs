@@ -51,10 +51,9 @@ namespace ideal_giggle
         }
 
         public T DeserializeByChunks<T>(string fileName,
-                                            int linesToSkip)
+                                            int linesToSkip,
+                                            int linesToRead)
         {
-            const int LINES_TO_READ = 10_000;
-
             XmlSerializer serializer =
                   new XmlSerializer(typeof(List<T>));
             T obj;
@@ -77,7 +76,7 @@ namespace ideal_giggle
                 string row = null;
 
                 while ((row = xmlReader.ReadLine()) != null && 
-                            linesRead < LINES_TO_READ)
+                            linesRead < linesToRead)
                 {
                     sb.Append(row);
                     linesRead++;

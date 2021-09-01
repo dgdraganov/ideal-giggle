@@ -60,11 +60,15 @@ namespace ideal_giggle
 
         public void InsertData<T>(string filePath)
         {
+            const int SIZE_OF_CHUNK = 1_000_000;
+            const int MAX_LINES_TO_INSERT = 10_000_000;
+
             int totalRowsRead = 0;
-            while (true)
+            while (totalRowsRead < MAX_LINES_TO_INSERT)
             {
                 T data = DataManager.DeserializeByChunks<T>(filePath,
-                                                             totalRowsRead);
+                                                             totalRowsRead,
+                                                             SIZE_OF_CHUNK);
                 
                 // If nothing to process - break
                 var rowsRead = (data as dynamic).Rows.Count;
