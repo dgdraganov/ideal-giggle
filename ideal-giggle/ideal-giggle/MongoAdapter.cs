@@ -131,32 +131,32 @@ namespace ideal_giggle
         {
             [BsonId] public ObjectId _id { get; set; }
 
-            public BsonInt32 id { get; set; }
-            public BsonString tagName { get; set; }
-            public BsonInt32 count { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue tagName { get; set; }
+            public BsonValue count { get; set; }
 
             public Tag(Tags.Row row)
             {
-                id = row.Id;
-                tagName = row.TagName;
-                count = row.Count;
+                id = BsonValue.Create(row.Id);
+                tagName = BsonValue.Create(row.TagName);
+                count = BsonValue.Create(row.Count);
             }
         }
 
         private class UserBadge
         {
             [BsonId] public ObjectId _id { get; set; }
-            public BsonInt32 id { get; set; }
-            public BsonInt32 userId { get; set; }
-            public BsonInt32 badgeId { get; set; }
-            public BsonDateTime date { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue userId { get; set; }
+            public BsonValue badgeId { get; set; }
+            public BsonValue date { get; set; }
 
             public UserBadge(UsersBadges.Row row)
             {
-                id = row.Id;
-                userId = row.UserId;
-                badgeId = row.BadgeId;
-                date = row.Date;
+                id = BsonValue.Create(row.Id);
+                userId = BsonValue.Create(row.UserId);
+                badgeId = BsonValue.Create(row.BadgeId);
+                date = BsonValue.Create(row.Date);
             }
 
         }
@@ -164,13 +164,13 @@ namespace ideal_giggle
         private class Badge
         {
             [BsonId] public ObjectId _id { get; set; }
-            public BsonInt32 id { get; set; }
-            public BsonString name { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue name { get; set; }
 
             public Badge(Badges.Row row)
             {
-                id = row.Id;
-                name = row.Name;
+                id = BsonValue.Create(row.Id);
+                name = BsonValue.Create(row.Name);
             }
 
         }
@@ -178,17 +178,17 @@ namespace ideal_giggle
         {
             [BsonId] public ObjectId _id { get; set; }
 
-            public BsonInt32 id { get; set; }
-            public BsonInt32 postId { get; set; }
-            public BsonInt32 voteTypeId { get; set; }
-            public BsonDateTime creationDate { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue postId { get; set; }
+            public BsonValue voteTypeId { get; set; }
+            public BsonValue creationDate { get; set; }
 
             public Vote(Votes.Row row)
             {
-                id = row.Id;
-                postId = row.PostId;
-                voteTypeId = row.VoteTypeId;
-                creationDate = row.CreationDate;
+                id = BsonValue.Create(row.Id);
+                postId = BsonValue.Create(row.PostId);
+                voteTypeId = BsonValue.Create(row.VoteTypeId);
+                creationDate = BsonValue.Create(row.CreationDate);
             }
         }
 
@@ -196,21 +196,21 @@ namespace ideal_giggle
         {
             [BsonId] public ObjectId _id { get; set; }
 
-            public BsonInt32 id { get; set; }
-            public BsonInt32 score { get; set; }
-            public BsonString text { get; set; }
-            public BsonString contentLicense { get; set; }
-            public BsonInt32 userId { get; set; }
-            public BsonDateTime creationDate { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue score { get; set; }
+            public BsonValue text { get; set; }
+            public BsonValue contentLicense { get; set; }
+            public BsonValue userId { get; set; }
+            public BsonValue creationDate { get; set; }
 
             public Comment(Comments.Row row)
             {
-                id = row.Id;
-                score = row.Score;
-                text = row.Text;
-                contentLicense = row.ContentLicense;
-                userId = row.UserId;
-                creationDate = row.CreationDate;
+                id = BsonValue.Create(row.Id);
+                score = BsonValue.Create(row.Score);
+                text = BsonValue.Create(row.Text);
+                contentLicense = BsonValue.Create(row.ContentLicense);
+                userId = BsonValue.Create(row.UserId);
+                creationDate = BsonValue.Create(row.CreationDate);
             }
         }
 
@@ -286,43 +286,43 @@ namespace ideal_giggle
         {
             [BsonId] public ObjectId _id { get; set; }
 
-            public BsonInt32 id { get; set; }
-            public BsonInt32 postTypeId { get; set; }
-            public BsonInt32 acceptedAnswerId { get; set; }
-            public BsonInt32 score { get; set; }
-            public BsonInt32 viewCount { get; set; }
-            public BsonString body { get; set; }
-            public BsonInt32 ownerUserId { get; set; }
-            public BsonInt32 lastEditorUserId { get; set; }
-            public BsonString title { get; set; }
-            public BsonString tags { get; set; }
-            public BsonInt32 answerCount { get; set; }
-            public BsonInt32 commentCount { get; set; }
-            public BsonInt32 favoriteCount { get; set; }
-            public BsonString contentLicense { get; set; }
-            public BsonDateTime creationDate { get; set; }
-            public BsonDateTime lastActivityDate { get; set; }
-            public BsonDateTime lastEditDate { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue postTypeId { get; set; }
+            public BsonValue acceptedAnswerId { get; set; }
+            public BsonValue score { get; set; }
+            public BsonValue viewCount { get; set; }
+            public BsonValue body { get; set; }
+            public BsonValue ownerUserId { get; set; }
+            public BsonValue lastEditorUserId { get; set; }
+            public BsonValue title { get; set; }
+            public BsonValue tags { get; set; }
+            public BsonValue answerCount { get; set; }
+            public BsonValue commentCount { get; set; }
+            public BsonValue favoriteCount { get; set; }
+            public BsonValue contentLicense { get; set; }
+            public BsonValue creationDate { get; set; }
+            public BsonValue lastActivityDate { get; set; }
+            public BsonValue lastEditDate { get; set; }
 
             public Post(Posts.Row row)
             {
-                id = row.Id;
-                postTypeId = row.PostTypeId;
-                acceptedAnswerId = row.AcceptedAnswerId;
-                score = row.Score;
-                viewCount = row.ViewCount;
-                body = row.Body;
-                ownerUserId = row.OwnerUserId;
-                lastEditorUserId = row.LastEditorUserId;
-                title = row.Title;
-                tags = row.Tags;
-                answerCount = row.AnswerCount;
-                commentCount = row.CommentCount;
-                favoriteCount = row.FavoriteCount;
-                contentLicense = row.ContentLicense;
-                creationDate = row.CreationDate;
-                lastActivityDate = row.LastActivityDate;
-                lastEditDate = row.LastEditDate;
+                id = BsonValue.Create(row.Id);
+                postTypeId = BsonValue.Create(row.PostTypeId);
+                acceptedAnswerId = BsonValue.Create(row.AcceptedAnswerId);
+                score = BsonValue.Create(row.Score);
+                viewCount = BsonValue.Create(row.ViewCount);
+                body = BsonValue.Create(row.Body);
+                ownerUserId = BsonValue.Create(row.OwnerUserId);
+                lastEditorUserId = BsonValue.Create(row.LastEditorUserId);
+                title = BsonValue.Create(row.Title);
+                tags = BsonValue.Create(row.Tags);
+                answerCount = BsonValue.Create(row.AnswerCount);
+                commentCount = BsonValue.Create(row.CommentCount);
+                favoriteCount = BsonValue.Create(row.FavoriteCount);
+                contentLicense = BsonValue.Create(row.ContentLicense);
+                creationDate = BsonValue.Create(row.CreationDate);
+                lastActivityDate = BsonValue.Create(row.LastActivityDate);
+                lastEditDate = BsonValue.Create(row.LastEditDate);
             }
         }
     }
