@@ -29,6 +29,7 @@ namespace ideal_giggle
         [XmlElement("row")]
         public List<Row> Rows { get; set; }
 
+       
         public class Row
         {
             [XmlAttribute("Id")]
@@ -181,6 +182,7 @@ namespace ideal_giggle
         [XmlElement("row")]
         public List<Row> Rows { get; set; }
 
+        //[XmlType("row")]
         public class Row
         {
             [XmlAttribute("Id")]

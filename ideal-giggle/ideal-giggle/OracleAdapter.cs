@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Reflection;
 using Oracle.ManagedDataAccess.Client;
 
 namespace ideal_giggle
@@ -13,6 +16,38 @@ namespace ideal_giggle
                "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1)))");
 
             ConnectionString = "user id=NIKI; password=niki; data source=orclpdb1";
+        }
+
+
+        //                       NIIIIICE
+        public void FillGenericTable<T>(T table)
+        {
+            var members = typeof(T).GetProperty("Rows", BindingFlags.Public | BindingFlags.Instance);
+            var rowType = typeof(T).GetNestedType("Row");
+            var rowTypeMembers = rowType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var listOfRows = (IEnumerable<object>)members.GetValue(table);
+
+            // Add dTable columns
+            DataTable dTable = new DataTable();
+            foreach (var member in rowTypeMembers)
+                dTable.Columns.Add(member.Name, member.PropertyType);
+
+
+            foreach (var row in listOfRows)
+            {
+                DataRow dRow = dTable.NewRow();
+
+                foreach (var member in rowTypeMembers)
+                {
+                    dRow[member.Name] = member.GetValue(row);
+                }
+
+                dTable.Rows.Add(dRow);
+            }
+
+            BulkCopyToDb(typeof(T).Name, dTable);
+
         }
 
         public void FillVotesTable(Votes votesTable)

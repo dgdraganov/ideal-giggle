@@ -12,9 +12,12 @@ namespace ideal_giggle
         static void Main(string[] args)
         {
 
+
+            // ---------------
+
             var dir = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
 
-            string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", "UsersBadges", "Badges", "Tags" };
+            string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", /*"UsersBadges", "Badges", "Tags"*/ };
 
             DataManager dm = new DataManager(tableNames);
 
@@ -26,20 +29,48 @@ namespace ideal_giggle
             Dictionary<string, string> fileNames = tableNames
                                                     .ToDictionary(x => x, x => $"{dir}\\{x}.xml");
 
-            //Posts posts =               dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
-            Users users =               dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
-            Votes votes =               dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
-            Comments comments =         dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
-            UsersBadges usersBadges =   dm.DeserializeToObject<UsersBadges>(fileNames[nameof(UsersBadges)]);
-            Badges badges =             dm.DeserializeToObject<Badges>(fileNames[nameof(Badges)]);
-            Tags tags =                 dm.DeserializeToObject<Tags>(fileNames[nameof(Tags)]);
-
-            Stopwatch sw = new Stopwatch();
-
 
             // Inserting to Oracle DB
             OracleAdapter adapter =
             new OracleAdapter();
+
+
+            //var rowsRead = 0;
+            //IEnumerable<Votes.Row> voteRows = null;
+            int totalRowsRead = 0;
+            while (true)
+            {
+                //    USE     DYNAMIC !!!!
+
+                Votes data = dm.DeserializeByChunks<Votes>(@"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Votes.xml",
+                                                                 totalRowsRead);
+
+                adapter.FillGenericTable<Votes>(data);
+
+                // If nothing to process - break
+                if (data.Rows.Count == 0)
+                    break;
+
+                Console.WriteLine(data.Rows.Last().Id);
+                Console.WriteLine("Processing...");
+                totalRowsRead += data.Rows.Count;
+            }
+
+
+
+
+            //Posts posts =               dm.DeserializeToObject<Posts>(fileNames[nameof(Posts)]);
+            Users users = dm.DeserializeToObject<Users>(fileNames[nameof(Users)]);
+            Votes votes = dm.DeserializeToObject<Votes>(fileNames[nameof(Votes)]);
+            Comments comments = dm.DeserializeToObject<Comments>(fileNames[nameof(Comments)]);
+            UsersBadges usersBadges = dm.DeserializeToObject<UsersBadges>(fileNames[nameof(UsersBadges)]);
+            Badges badges = dm.DeserializeToObject<Badges>(fileNames[nameof(Badges)]);
+            Tags tags = dm.DeserializeToObject<Tags>(fileNames[nameof(Tags)]);
+
+            Stopwatch sw = new Stopwatch();
+
+
+         
 
             sw.Start();
             //adapter.FillPostsTable(posts);
@@ -69,6 +100,26 @@ namespace ideal_giggle
             sw.Stop();
 
             ConsolePrinter.PrintLine($"All data filled to the Mongo DB! Time required for all data to be inserted: {sw.Elapsed}");
+
+        }
+
+
+        public static void InsertData<T>(DataManager dMngr, OracleAdapter oAdapt)
+        {
+
+            //int totalRowsRead = 0;
+            //while (true)
+            //{
+            //    T data = dMngr.DeserializeByChunks<T>(@"C:\Users\draga\Desktop\csProj\ideal-giggle\DbData\Votes.xml",
+            //                                                     totalRowsRead);
+            //    // If nothing to process - break
+            //    if (data.Rows.Count == 0)
+            //        break;
+
+            //    Console.WriteLine(data.Rows.Last().Id);
+            //    Console.WriteLine("Processing...");
+            //    totalRowsRead += data.Rows.Count;
+            //}
 
         }
     }

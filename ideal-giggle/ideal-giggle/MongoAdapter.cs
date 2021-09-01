@@ -2,7 +2,9 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ideal_giggle
 {
@@ -15,6 +17,60 @@ namespace ideal_giggle
         {
             ConnectionString = "mongodb://127.0.0.1:27017";
             DataBase = "mylib";
+        }
+
+        public void FillGenericTable<T>(T table)
+        {
+            var tableType = table.GetType();
+
+            string collectionName = tableType.Name.ToLower();
+            var client = new MongoClient(ConnectionString);
+            var db = client.GetDatabase(DataBase);
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.Capped = false;
+
+            db.CreateCollection(collectionName, options);
+
+            // Get Vote dynamically based on T (Votes in this case) 
+            //var entitiesCollection = db.GetCollection<Vote>(collectionName);
+            var getCollectionMethod = db.GetType().GetMethod("GetCollection", BindingFlags.Public | BindingFlags.Instance);
+            var correspondingTypeName = tableType.Name.TrimEnd('s'); // Vote
+            var correspondingType = typeof(MongoAdapter).GetNestedType(correspondingTypeName, BindingFlags.NonPublic); // Type Vote
+            var getCollectionInfo = getCollectionMethod.MakeGenericMethod(correspondingType); // db.GetCollection<Vote>
+            var collectionResult  = getCollectionInfo.Invoke(db, new[] { collectionName } );
+
+
+            var rowType = typeof(T).GetNestedType("Row");
+
+            var rows = (table as dynamic).Rows as object[];
+            var arrRows = Array.CreateInstance(rowType, rows.Count());
+
+            var insertOnModelType = Assembly
+                                    .GetAssembly(typeof(MongoAdapter))
+                                    .GetType("InsertOneModel", true)
+                                    .MakeGenericType(correspondingType); // InsertOneModel<Vote>
+            var insertOnModelTypeConstructor = insertOnModelType.GetConstructor(new[] { correspondingType });
+
+            //insertModelType = insertModelType.MakeGenericType(correspondingType);
+
+            var listToInsert =  Array.CreateInstance(insertOnModelType, arrRows.Length);
+
+            var correspondingTypeConstructor = correspondingType.GetConstructor(new[] { tableType });
+            for (int i = 0; i < arrRows.GetLength(0); i++)
+            {
+                var argumentToInsertOnModel = correspondingTypeConstructor
+                                                                .Invoke(new[] { arrRows.GetValue(i) });
+
+                var insertOnModelTypeInstance = insertOnModelTypeConstructor
+                                                                .Invoke(new[] { argumentToInsertOnModel });
+
+                listToInsert.SetValue(insertOnModelTypeInstance, i);
+            }
+
+            var resultWrites = (collectionResult as dynamic).BulkWriteAsync(listToInsert).Result;
+
+            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
+
         }
 
         public void FillVotesTable(Votes votesTable)
@@ -31,10 +87,11 @@ namespace ideal_giggle
 
             var postsCollection = db.GetCollection<Vote>(collectionName);
 
+          
             var listWrites = votesTable.Rows
-                                  .Select(p => new InsertOneModel<Vote>(new Vote(p)))
-                                  .ToList();
+                                  .Select(p => new InsertOneModel<Vote>(new Vote(p)));
 
+            //
             var resultWrites = postsCollection.BulkWriteAsync(listWrites).Result;
 
             ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
@@ -194,7 +251,6 @@ namespace ideal_giggle
                 tagName = row.TagName;
                 count = row.Count;
             }
-
         }
 
         private class UserBadge
