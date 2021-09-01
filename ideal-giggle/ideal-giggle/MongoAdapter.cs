@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ideal_giggle
 {
-    public class MongoAdapter
+    public class MongoAdapter : IDbAdapter
     {
         private string ConnectionString { get; }
         public string DataBase { get; }
@@ -19,7 +21,7 @@ namespace ideal_giggle
             DataBase = "mylib";
         }
 
-        public void FillGenericTable<T>(T table)
+        public void InsertToTable<T>(T table)
         {
             var tableType = table.GetType();
 
@@ -31,46 +33,77 @@ namespace ideal_giggle
 
             db.CreateCollection(collectionName, options);
 
-            // Get Vote dynamically based on T (Votes in this case) 
-            //var entitiesCollection = db.GetCollection<Vote>(collectionName);
-            var getCollectionMethod = db.GetType().GetMethod("GetCollection", BindingFlags.Public | BindingFlags.Instance);
-            var correspondingTypeName = tableType.Name.TrimEnd('s'); // Vote
-            var correspondingType = typeof(MongoAdapter).GetNestedType(correspondingTypeName, BindingFlags.NonPublic); // Type Vote
-            var getCollectionInfo = getCollectionMethod.MakeGenericMethod(correspondingType); // db.GetCollection<Vote>
-            var collectionResult  = getCollectionInfo.Invoke(db, new[] { collectionName } );
+            //=======================================
+            // Get Vote dynamically based on Votes (actial generic T) 
+            // var coll = db.GetCollection<Vote>(collectionName);
+            var correspondingTypeName = tableType.Name.TrimEnd('s'); // Vote type name (corresponds to Votes parameter)
+            var getCollectionMethod = db.GetType().GetMethod("GetCollection", BindingFlags.Public | BindingFlags.Instance); 
+            var correspondingType = typeof(MongoAdapter).GetNestedType(correspondingTypeName, BindingFlags.NonPublic); // Vote type 
+            var getCollectionInfo = getCollectionMethod.MakeGenericMethod(correspondingType); // make GetCollection generic
+            var collectionResult = getCollectionInfo.Invoke(db, new[] { collectionName, null }); // call db.GetCollection<Vote>
+            //=======================================
 
 
-            var rowType = typeof(T).GetNestedType("Row");
+            //=======================================
+            // Getting all the table rows to be inserted
+            // and parsing them to object[]
+            var rowsPropValue = table.GetType().GetProperty("Rows", BindingFlags.Instance | BindingFlags.Public).GetValue(table);
+            var rows = (rowsPropValue as IEnumerable<object>).ToArray();
+            //=======================================
 
-            var rows = (table as dynamic).Rows as object[];
-            var arrRows = Array.CreateInstance(rowType, rows.Count());
 
+            //=======================================
+            // Prepare InsertOneModel type for usage 
             var insertOnModelType = Assembly
-                                    .GetAssembly(typeof(MongoAdapter))
-                                    .GetType("InsertOneModel", true)
-                                    .MakeGenericType(correspondingType); // InsertOneModel<Vote>
+                                        .GetAssembly(typeof(MongoClient))
+                                        .GetType("MongoDB.Driver.InsertOneModel`1", true)
+                                        .MakeGenericType(correspondingType); // InsertOneModel<Vote>
+
+            // Get InsertOneModel<Vote> constructor
             var insertOnModelTypeConstructor = insertOnModelType.GetConstructor(new[] { correspondingType });
+            //=======================================
 
-            //insertModelType = insertModelType.MakeGenericType(correspondingType);
+            // Craete empty Array to be filled out with InsertOneModel instances
+            var listToInsert = Array.CreateInstance(insertOnModelType, rows.Length);
 
-            var listToInsert =  Array.CreateInstance(insertOnModelType, arrRows.Length);
-
-            var correspondingTypeConstructor = correspondingType.GetConstructor(new[] { tableType });
-            for (int i = 0; i < arrRows.GetLength(0); i++)
+            var rowType = typeof(T).GetNestedType("Row");   // class Votes.Row
+            var correspondingTypeConstructor = correspondingType.GetConstructor(new[] { rowType }); // Vote(Votes.Row) constructor
+            for (int i = 0; i < rows.Length; i++)
             {
-                var argumentToInsertOnModel = correspondingTypeConstructor
-                                                                .Invoke(new[] { arrRows.GetValue(i) });
+                // new Vote(p)
+                var argForInsertOnModel = correspondingTypeConstructor
+                                                                .Invoke(new[] { rows[i] });
 
+                // new InsertOneModel<Vote>( ... )
                 var insertOnModelTypeInstance = insertOnModelTypeConstructor
-                                                                .Invoke(new[] { argumentToInsertOnModel });
-
+                                                                .Invoke(new[] { argForInsertOnModel });
+                // Add to list
                 listToInsert.SetValue(insertOnModelTypeInstance, i);
             }
 
-            var resultWrites = (collectionResult as dynamic).BulkWriteAsync(listToInsert).Result;
+            //=======================================
+            // Calling BulkWriteAsync and getting the result
+            // get BulkWriteAsync method
+            var bulkWriteAsyncMethod = collectionResult.GetType().GetMethod("BulkWriteAsync",
+                                                                            new[] { listToInsert.GetType(),
+                                                                                typeof(BulkWriteOptions),
+                                                                                typeof(CancellationToken) });
+            // invoke BulkWriteAsync method
+            var bulkWriteTask = bulkWriteAsyncMethod.Invoke(collectionResult,
+                                                                new object[] {
+                                                                        listToInsert,
+                                                                        null,
+                                                                        default(CancellationToken) });
 
-            ConsolePrinter.PrintLine($"OK?: {resultWrites.IsAcknowledged} - Inserted Count: {resultWrites.InsertedCount}", ConsoleColor.Green);
+            // BulkWriteAsync returns a Task<T> so we need to get the value of Result property
+            var bulkWriteResult = bulkWriteTask.GetType().GetProperty("Result").GetValue(bulkWriteTask);
+            //=======================================
 
+            var bulkWriteResultType = bulkWriteResult.GetType();
+            var isAcknowledged = bulkWriteResultType.GetProperty("IsAcknowledged", BindingFlags.Instance | BindingFlags.Public).GetValue(bulkWriteResult);
+            var insertedCount = bulkWriteResultType.GetProperty("InsertedCount", BindingFlags.Instance | BindingFlags.Public).GetValue(bulkWriteResult);
+
+            ConsolePrinter.PrintLine($"OK?: {isAcknowledged} - Inserted Count: {insertedCount}", ConsoleColor.Green);
         }
 
         public void FillVotesTable(Votes votesTable)
@@ -87,7 +120,7 @@ namespace ideal_giggle
 
             var postsCollection = db.GetCollection<Vote>(collectionName);
 
-          
+
             var listWrites = votesTable.Rows
                                   .Select(p => new InsertOneModel<Vote>(new Vote(p)));
 

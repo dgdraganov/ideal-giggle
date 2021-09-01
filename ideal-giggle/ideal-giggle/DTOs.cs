@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace ideal_giggle
@@ -171,10 +168,8 @@ namespace ideal_giggle
 
             [XmlAttribute("AccountId")]
             public int AccountId { get; set; }
-
         }
     }
-
 
     [XmlRoot("votes")]
     public class Votes
@@ -197,7 +192,6 @@ namespace ideal_giggle
             [XmlAttribute("CreationDate")]
             public DateTime CreationDate { get; set; }
         }
-
     }
 
     [XmlRoot("comments")]
@@ -229,7 +223,5 @@ namespace ideal_giggle
             [XmlAttribute("ContentLicense")]
             public string ContentLicense { get; set; }
         }
-
-
     }
 }

@@ -7,7 +7,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace ideal_giggle
 {
-    public class OracleAdapter
+    public class OracleAdapter : IDbAdapter
     {
         private string ConnectionString { get; }
         public OracleAdapter()
@@ -19,8 +19,7 @@ namespace ideal_giggle
         }
 
 
-        //                       NIIIIICE
-        public void FillGenericTable<T>(T table)
+        public void InsertToTable<T>(T table)
         {
             var members = typeof(T).GetProperty("Rows", BindingFlags.Public | BindingFlags.Instance);
             var rowType = typeof(T).GetNestedType("Row");
@@ -49,7 +48,36 @@ namespace ideal_giggle
             BulkCopyToDb(typeof(T).Name, dTable);
 
         }
+        private void BulkCopyToDb(string targetTable, DataTable dTable)
+        {
+            try
+            {
+                using (var connection = new OracleConnection(ConnectionString))
+                {
+                    connection.Open();
+                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
+                    {
+                        bulkCopy.DestinationTableName = targetTable;
+                        bulkCopy.BulkCopyTimeout = 600;
+                        foreach (DataColumn dtColumn in dTable.Columns)
+                        {
+                            bulkCopy.ColumnMappings.Add(dtColumn.ColumnName, dtColumn.ColumnName.ToUpper());
+                        }
+                        bulkCopy.WriteToServer(dTable);
+                    }
+                }
 
+                ConsolePrinter.PrintLine($"Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
+            }
+            catch (Exception ex)
+            {
+                ConsolePrinter.PrintLine($"Method {nameof(FillVotesTable)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
+                ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
+                return;
+            }
+        }
+
+        // Not needed ?
         public void FillVotesTable(Votes votesTable)
         {
             DataTable dTable = new DataTable();
@@ -73,7 +101,6 @@ namespace ideal_giggle
 
             BulkCopyToDb(nameof(Votes), dTable);
         }
-
         public void FillUsersBadgesTable(UsersBadges usersBadgesTable)
         {
             DataTable dTable = new DataTable();
@@ -96,7 +123,6 @@ namespace ideal_giggle
 
             BulkCopyToDb(nameof(UsersBadges), dTable);
         }
-
         public void FillBadgesTable(Badges badgesTable)
         {
             DataTable dTable = new DataTable();
@@ -115,7 +141,6 @@ namespace ideal_giggle
 
             BulkCopyToDb(nameof(Badges), dTable);
         }
-
         public void FillTagsTable(Tags tagsTable)
         {
             DataTable dTable = new DataTable();
@@ -136,7 +161,6 @@ namespace ideal_giggle
 
             BulkCopyToDb(nameof(Tags), dTable);
         }
-
         public void FillPostsTable(Posts postsTable)
         {
             DataTable dTable = new DataTable();
@@ -226,9 +250,6 @@ namespace ideal_giggle
 
             BulkCopyToDb(nameof(Users), dTable);
         }
-
-
-
         public void FillCommentsTable(Comments commentsTable)
         {
             DataTable dTable = new DataTable();
@@ -256,35 +277,6 @@ namespace ideal_giggle
             }
 
             BulkCopyToDb(nameof(Comments), dTable);
-        }
-
-        private void BulkCopyToDb(string targetTable, DataTable dTable)
-        {
-            try
-            {
-                using (var connection = new OracleConnection(ConnectionString))
-                {
-                    connection.Open();
-                    using (var bulkCopy = new OracleBulkCopy(connection, OracleBulkCopyOptions.UseInternalTransaction))
-                    {
-                        bulkCopy.DestinationTableName = targetTable;
-                        bulkCopy.BulkCopyTimeout = 600;
-                        foreach (DataColumn dtColumn in dTable.Columns)
-                        {
-                            bulkCopy.ColumnMappings.Add(dtColumn.ColumnName, dtColumn.ColumnName.ToUpper());
-                        }
-                        bulkCopy.WriteToServer(dTable);
-                    }
-                }
-
-                ConsolePrinter.PrintLine($"Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
-            }
-            catch (Exception ex)
-            {
-                ConsolePrinter.PrintLine($"Method {nameof(FillVotesTable)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
-                ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
-                return;
-            }
         }
     }
 

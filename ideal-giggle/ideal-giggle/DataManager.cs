@@ -12,33 +12,37 @@ namespace ideal_giggle
     {
         public DataManager(string[] fileNames)
         {
-            FileNames = fileNames;
+            TableNames = fileNames;
+            FilesDirectory = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
+            FilesPaths = TableNames.ToDictionary(x => x, x => $"{FilesDirectory}\\{x}.xml");
         }
 
-        public string[] FileNames { get; }
+        public string FilesDirectory { get; }
+        public string[] TableNames { get; }
+        public IDictionary<string, string> FilesPaths { get; }
 
 
-        public bool CheckIfDataExists(string dir)
+        public bool CheckIfDataExists()
         {
 
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(FilesDirectory))
             {
-                var dirInfo = Directory.CreateDirectory(dir);
+                var dirInfo = Directory.CreateDirectory(FilesDirectory);
 
                 ConsolePrinter.PrintLine($"Directory '{dirInfo.FullName}' was missing and it has been created! Make sure the following files are present in the directory before restarting the program:", ConsoleColor.Red);
-                ConsolePrinter.PrintLine($"{string.Join(", ", FileNames)}");
+                ConsolePrinter.PrintLine($"{string.Join(", ", TableNames)}");
                 return false;
             }
 
-            var files = Directory.GetFiles(dir).Select(f => f.Split("\\").Last()).ToArray();
+            var files = Directory.GetFiles(FilesDirectory).Select(f => f.Split("\\").Last()).ToArray();
 
-            foreach (var fileName in FileNames)
+            foreach (var fileName in TableNames)
             {
                 var currentFile = string.Concat(fileName, ".xml");
                 if (!files.Contains(currentFile))
                 {
                     ConsolePrinter.PrintLine($"{currentFile} is missing!\nMake sure the following files are present in the directory before restarting the program:", ConsoleColor.Red);
-                    ConsolePrinter.PrintLine($"{string.Join(", ", FileNames)}");
+                    ConsolePrinter.PrintLine($"{string.Join(", ", TableNames)}");
                     return false;
                 }
             }
@@ -84,20 +88,9 @@ namespace ideal_giggle
                     sb.Append(closingTag);
                 }
 
-                /*     I M P O R T A N T
-                    
-                Check empty case: 
-                    <votes>
-                    </votes>
-                 
-                 */
-
                 var resultString = sb.ToString();
                 byte[] byteArray = Encoding.ASCII.GetBytes(resultString);
              
-
-                // convert stream to string
-                
                 using (StreamReader reader = new StreamReader(new MemoryStream(byteArray)))
                 {
                     XmlSerializer deserializer = new XmlSerializer(typeof(T)/*, new XmlRootAttribute(tableName)*/);
@@ -105,7 +98,6 @@ namespace ideal_giggle
 
                     return parsedLines;
                 }
-                //parsedLines = list;
 
             }
 

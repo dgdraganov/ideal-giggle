@@ -8,10 +8,7 @@ namespace ideal_giggle
 {
     public interface IDbAdapter
     {
-
-        public void InsertIntoDb();
-        //public void InsertIntoDb();
-        //public void InsertIntoDb();
-        //public void InsertIntoDb();
+        public void InsertToTable<T>(T table);
+  
     }
 }
