@@ -36,6 +36,12 @@ namespace ideal_giggle
         public void AddAdapter(IDbAdapter adapter)
         {
             DbAdapters.Add(adapter);
+
+            Measurements[adapter.Name] = new Dictionary<string, long>();
+            foreach (var table in DataManager.TableNames)
+            {
+                Measurements[adapter.Name][table] = 0;
+            }
         }
 
         public void FillDatabases()
@@ -67,7 +73,7 @@ namespace ideal_giggle
             while (totalRowsRead < MAX_LINES_TO_INSERT)
             {
                 T data = DataManager.DeserializeByChunks<T>(filePath,
-                                                             totalRowsRead,
+                                                             totalRowsRead
                                                              SIZE_OF_CHUNK);
                 
                 // If nothing to process - break
@@ -99,16 +105,6 @@ namespace ideal_giggle
             if (!succ)
                 return;
 
-          
-            foreach (var adapt in DbAdapters)
-            {
-                //var adapterTypeName = adapt.GetType().Name;
-                Measurements[adapt.Name] = new Dictionary<string, long>();
-                foreach (var table in DataManager.TableNames)
-                {
-                    Measurements[adapt.Name][table] = 0;
-                }
-            }
         }
 
     }
