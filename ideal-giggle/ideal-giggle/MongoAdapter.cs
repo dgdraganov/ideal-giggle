@@ -25,10 +25,9 @@ namespace ideal_giggle
             Name = "Mongo Adapter";
         }
 
-        public void InsertToTable<T>(T table)
+        public long InsertToTable<T>(T table)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+           
             var tableType = table.GetType();
 
             string collectionName = tableType.Name.ToLower();
@@ -97,9 +96,6 @@ namespace ideal_giggle
                                                                             new[] { listToInsert.GetType(),
                                                                                 typeof(BulkWriteOptions),
                                                                                 typeof(CancellationToken) });
-            sw.Stop();
-            Console.WriteLine($"[DEBUG] time elapsed {sw.Elapsed}");
-
 
             // invoke BulkWriteAsync method
             var bulkWriteTask = bulkWriteAsyncMethod.Invoke(collectionResult,
@@ -107,9 +103,13 @@ namespace ideal_giggle
                                                                         listToInsert,
                                                                         null,
                                                                         default(CancellationToken) });
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             // BulkWriteAsync returns a Task<T> so we need to get the value of Result property
             var bulkWriteResult = bulkWriteTask.GetType().GetProperty("Result").GetValue(bulkWriteTask);
+            sw.Stop();
+
             //=======================================
 
             var bulkWriteResultType = bulkWriteResult.GetType();
@@ -117,6 +117,8 @@ namespace ideal_giggle
             var insertedCount = bulkWriteResultType.GetProperty("InsertedCount", BindingFlags.Instance | BindingFlags.Public).GetValue(bulkWriteResult);
 
             ConsolePrinter.PrintLine($"Mongo DB -> OK?: {isAcknowledged} - Inserted Count: {insertedCount}", ConsoleColor.Green);
+
+            return sw.ElapsedMilliseconds;
         }
 
         private bool CollectionExists(IMongoDatabase database, string collectionName)

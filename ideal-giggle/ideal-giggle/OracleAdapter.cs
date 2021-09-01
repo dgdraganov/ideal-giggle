@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Oracle.ManagedDataAccess.Client;
@@ -24,7 +25,7 @@ namespace ideal_giggle
         private string ConnectionString { get; }
 
 
-        public void InsertToTable<T>(T table)
+        public long InsertToTable<T>(T table)
         {
             var members = typeof(T).GetProperty("Rows", BindingFlags.Public | BindingFlags.Instance);
             var rowType = typeof(T).GetNestedType("Row");
@@ -50,11 +51,13 @@ namespace ideal_giggle
                 dTable.Rows.Add(dRow);
             }
 
-            BulkCopyToDb(typeof(T).Name, dTable);
+            return BulkCopyToDb(typeof(T).Name, dTable);
 
         }
-        private void BulkCopyToDb(string targetTable, DataTable dTable)
+        private long BulkCopyToDb(string targetTable, DataTable dTable)
         {
+            Stopwatch sw = new Stopwatch();
+
             try
             {
                 using (var connection = new OracleConnection(ConnectionString))
@@ -68,18 +71,24 @@ namespace ideal_giggle
                         {
                             bulkCopy.ColumnMappings.Add(dtColumn.ColumnName, dtColumn.ColumnName.ToUpper());
                         }
+
+                        sw.Start();
                         bulkCopy.WriteToServer(dTable);
+                        sw.Stop();
                     }
                 }
 
                 ConsolePrinter.PrintLine($"Oracle DB -> Successfully added {dTable.Rows.Count} records to table {targetTable}!", ConsoleColor.Green);
+                return sw.ElapsedMilliseconds;
+
             }
             catch (Exception ex)
             {
                 ConsolePrinter.PrintLine($"Method {nameof(BulkCopyToDb)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
                 ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
-                return;
+                return 0;
             }
+
         }
 
      

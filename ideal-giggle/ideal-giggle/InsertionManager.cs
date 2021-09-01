@@ -26,10 +26,13 @@ namespace ideal_giggle
             foreach (var adapter in Measurements.Keys)
             {
                 ConsolePrinter.PrintLine($"\t{adapter}:", ConsoleColor.DarkYellow);
+                long totalTime = 0;
                 foreach (var table in Measurements[adapter])
                 {
                     ConsolePrinter.PrintLine($"\t\t{table.Key} - {TimeSpan.FromMilliseconds(table.Value)}", ConsoleColor.Green);
+                    totalTime += table.Value;
                 }
+                ConsolePrinter.PrintLine($"\t\tTotal time: {totalTime}", ConsoleColor.Cyan);
             }
         }
 
@@ -85,15 +88,12 @@ namespace ideal_giggle
 
                 foreach (var adapter in DbAdapters)
                 {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    adapter.InsertToTable<T>(data);
-                    sw.Stop();
+                    var insertTime = adapter.InsertToTable<T>(data);
 
                     var adapterName = adapter.Name;
                     var tableName = typeof(T).Name;
 
-                    Measurements[adapterName][tableName] += sw.ElapsedMilliseconds;
+                    Measurements[adapterName][tableName] += insertTime;
                 }
                 Console.WriteLine("-----------------------------");
                 totalRowsRead += rowsRead;
