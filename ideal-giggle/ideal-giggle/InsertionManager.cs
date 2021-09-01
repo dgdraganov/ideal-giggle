@@ -25,8 +25,6 @@ namespace ideal_giggle
         {
             var fileNames = DataManager.FilesPaths;
 
-            //InsertData<Votes>(DataManager.FilesPaths[nameof(Votes)]);
-
             var insertDataMethod = typeof(InsertionManager)
                                                     .GetMethod("InsertData");
 
