@@ -10,10 +10,10 @@ namespace ideal_giggle
 {
     public class DataManager
     {
-        public DataManager(string[] fileNames)
+        public DataManager()
         {
-            TableNames = fileNames;
             FilesDirectory = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
+            TableNames = Directory.GetFiles(FilesDirectory).Select(f => f.Split('\\').Last().Split('.')[0]).ToArray();
             FilesPaths = TableNames.ToDictionary(x => x, x => $"{FilesDirectory}\\{x}.xml");
         }
 

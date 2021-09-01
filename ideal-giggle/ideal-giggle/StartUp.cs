@@ -19,10 +19,13 @@ namespace ideal_giggle
             MongoAdapter mAdapt = 
                 new MongoAdapter();
 
-            string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", "UsersBadges", "Badges", "Tags" };
+            // string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", "UsersBadges", "Badges", "Tags" };
 
-            InsertionManager im = new InsertionManager(tableNames, oAdapt, mAdapt);
-            im.FillDatabases();
+            InsertionManager iManager = new InsertionManager();
+            iManager.AddAdapter(oAdapt);
+            iManager.AddAdapter(mAdapt);
+
+            iManager.FillDatabases();
 
         }
 

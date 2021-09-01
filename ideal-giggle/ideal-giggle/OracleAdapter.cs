@@ -9,14 +9,19 @@ namespace ideal_giggle
 {
     public class OracleAdapter : IDbAdapter
     {
-        private string ConnectionString { get; }
+      
         public OracleAdapter()
         {
             OracleConfiguration.OracleDataSources.Add("orclpdb1",
                "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1)))");
 
             ConnectionString = "user id=NIKI; password=niki; data source=orclpdb1";
+            Name = "Oracle Adapter";
         }
+
+        public string Name { get; }
+
+        private string ConnectionString { get; }
 
 
         public void InsertToTable<T>(T table)

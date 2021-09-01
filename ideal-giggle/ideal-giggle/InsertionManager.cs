@@ -9,18 +9,34 @@ namespace ideal_giggle
 {
     public class InsertionManager
     {
-        public InsertionManager(string[] tables,
-                                params IDbAdapter[] adapters)
+        public InsertionManager()
         {
-            DataManager = new DataManager(tables);
-            DbAdapters = adapters;
+            DataManager = new DataManager();
+            DbAdapters = new HashSet<IDbAdapter>();
             Measurements = new Dictionary<string, Dictionary<string, long>>();
             Initialize();
         }
 
         public DataManager DataManager { get; }
-        public IDbAdapter[] DbAdapters { get; }
+        public ICollection<IDbAdapter> DbAdapters { get; }
         public Dictionary<string, Dictionary<string, long>> Measurements { get; }
+
+        public void PrintStatistics()
+        {
+            foreach (var adapter in Measurements.Keys)
+            {
+                ConsolePrinter.PrintLine($"\t{adapter}:", ConsoleColor.DarkYellow);
+                foreach (var table in Measurements[adapter])
+                {
+                    ConsolePrinter.PrintLine($"\t\t{table.Key} - {TimeSpan.FromMilliseconds(table.Value)}", ConsoleColor.Green);
+                }
+            }
+        }
+
+        public void AddAdapter(IDbAdapter adapter)
+        {
+            DbAdapters.Add(adapter);
+        }
 
         public void FillDatabases()
         {
@@ -37,6 +53,8 @@ namespace ideal_giggle
                                  .Invoke(this, new[] { filePath });
 
             }
+
+            PrintStatistics();
         }
 
 
@@ -80,11 +98,11 @@ namespace ideal_giggle
           
             foreach (var adapt in DbAdapters)
             {
-                var adapterTypeName = adapt.GetType().Name;
-                Measurements[adapterTypeName] = new Dictionary<string, long>();
+                //var adapterTypeName = adapt.GetType().Name;
+                Measurements[adapt.Name] = new Dictionary<string, long>();
                 foreach (var table in DataManager.TableNames)
                 {
-                    Measurements[adapterTypeName][table] = 0;
+                    Measurements[adapt.Name][table] = 0;
                 }
             }
         }

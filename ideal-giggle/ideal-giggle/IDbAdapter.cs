@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ideal_giggle
+﻿namespace ideal_giggle
 {
     public interface IDbAdapter
     {
+        public string Name { get; }
         public void InsertToTable<T>(T table);
   
     }

@@ -15,10 +15,13 @@ namespace ideal_giggle
         private string ConnectionString { get; }
         public string DataBase { get; }
 
+        public string Name{ get; }
+
         public MongoAdapter()
         {
             ConnectionString = "mongodb://127.0.0.1:27017";
             DataBase = "MongoDB";
+            Name = "Mongo Adapter";
         }
 
         public void InsertToTable<T>(T table)
@@ -228,9 +231,9 @@ namespace ideal_giggle
                 creationDate = row.CreationDate;
                 displayName = row.DisplayName;
                 lastAccessDate = row.LastAccessDate;
-                websiteUrl = row.WebsiteUrl;
-                location = row.Location;
-                aboutMe = row.AboutMe;
+                websiteUrl = row.WebsiteUrl ?? BsonString.Empty;
+                location = row.Location ?? BsonString.Empty;
+                aboutMe = row.AboutMe ?? BsonString.Empty;
                 views = row.Views;
                 upVotes = row.UpVotes;
                 downVotes = row.DownVotes;
