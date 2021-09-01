@@ -211,35 +211,69 @@ namespace ideal_giggle
         {
             [BsonId] public ObjectId _id { get; set; }
 
-            public BsonInt32 id { get; set; }
-            public BsonInt32 reputation { get; set; }
-            public BsonDateTime creationDate { get; set; }
-            public BsonString displayName { get; set; }
-            public BsonDateTime lastAccessDate { get; set; }
-            public BsonString websiteUrl { get; set; }
-            public BsonString location { get; set; }
-            public BsonString aboutMe { get; set; }
-            public BsonInt32 views { get; set; }
-            public BsonInt32 upVotes { get; set; }
-            public BsonInt32 downVotes { get; set; }
-            public BsonInt32 accountId { get; set; }
+            public BsonValue id { get; set; }
+            public BsonValue reputation { get; set; }
+            public BsonValue creationDate { get; set; }
+            public BsonValue displayName { get; set; }
+            public BsonValue lastAccessDate { get; set; }
+            public BsonValue websiteUrl { get; set; }
+            public BsonValue location { get; set; }
+            public BsonValue aboutMe { get; set; }
+            public BsonValue views { get; set; }
+            public BsonValue upVotes { get; set; }
+            public BsonValue downVotes { get; set; }
+            public BsonValue accountId { get; set; }
 
             public User(Users.Row row)
             {
                 id = row.Id;
-                reputation = row.Reputation;
-                creationDate = row.CreationDate;
-                displayName = row.DisplayName;
-                lastAccessDate = row.LastAccessDate;
-                websiteUrl = row.WebsiteUrl ?? BsonString.Empty;
-                location = row.Location ?? BsonString.Empty;
-                aboutMe = row.AboutMe ?? BsonString.Empty;
-                views = row.Views;
-                upVotes = row.UpVotes;
-                downVotes = row.DownVotes;
-                accountId = row.AccountId;
+                reputation = BsonValue.Create(row.Reputation);
+                creationDate = BsonValue.Create(row.CreationDate);
+                displayName = BsonValue.Create(row.DisplayName);
+                lastAccessDate = BsonValue.Create(row.LastAccessDate);
+                websiteUrl = BsonValue.Create(row.WebsiteUrl);
+                location = BsonValue.Create(row.Location);
+                aboutMe = BsonValue.Create(row.AboutMe);
+                views = BsonValue.Create(row.Views);
+                upVotes = BsonValue.Create(row.UpVotes);
+                downVotes = BsonValue.Create(row.DownVotes);
+                accountId = BsonValue.Create(row.AccountId);
             }
         }
+
+        //private class User
+        //{
+        //    [BsonId] public ObjectId _id { get; set; }
+
+        //    public BsonInt32 id { get; set; }
+        //    public BsonInt32 reputation { get; set; }
+        //    public BsonDateTime creationDate { get; set; }
+        //    public BsonString displayName { get; set; }
+        //    public BsonDateTime lastAccessDate { get; set; }
+        //    public BsonString websiteUrl { get; set; }
+        //    public BsonString location { get; set; }
+        //    public BsonString aboutMe { get; set; }
+        //    public BsonInt32 views { get; set; }
+        //    public BsonInt32 upVotes { get; set; }
+        //    public BsonInt32 downVotes { get; set; }
+        //    public BsonInt32 accountId { get; set; }
+
+        //    public User(Users.Row row)
+        //    {
+        //        id = row.Id;
+        //        reputation = row.Reputation;
+        //        creationDate = row.CreationDate;
+        //        displayName = row.DisplayName;
+        //        lastAccessDate = row.LastAccessDate;
+        //        websiteUrl = row.WebsiteUrl ?? BsonString.Empty;
+        //        location = row.Location ?? BsonString.Empty;
+        //        aboutMe = row.AboutMe ?? BsonString.Empty;
+        //        views = row.Views;
+        //        upVotes = row.UpVotes;
+        //        downVotes = row.DownVotes;
+        //        accountId = row.AccountId;
+        //    }
+        //}
 
         private class Post
         {
