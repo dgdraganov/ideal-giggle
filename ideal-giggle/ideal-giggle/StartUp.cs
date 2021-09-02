@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 
@@ -37,7 +36,5 @@ namespace ideal_giggle
             iManager.FillDatabases();
 
         }
-
-
     }
 }

@@ -122,7 +122,7 @@ namespace ideal_giggle
             {
                 sw.Stop();
                 var methodName = nameof(bulkWriteAsyncMethod.Name);
-                ConsolePrinter.PrintLine($"Method {methodName} failed when inserting bulp data to the Mongo Db table {table.GetType().Na}!", ConsoleColor.Red);
+                ConsolePrinter.PrintLine($"Method {methodName} failed when inserting bulp data to the Mongo Db table {table.GetType().Name}!", ConsoleColor.Red);
                 ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
                 Logger.Log(LogLevel.Error, $"Exception has been thrown by {methodName} method! Time taken: {sw.Elapsed}", ex);
                 return sw.ElapsedMilliseconds;
