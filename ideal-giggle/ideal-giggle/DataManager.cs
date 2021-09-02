@@ -10,9 +10,9 @@ namespace ideal_giggle
 {
     public class DataManager
     {
-        public DataManager()
+        public DataManager(string filesDirectory)
         {
-            FilesDirectory = Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
+            FilesDirectory = filesDirectory;
             TableNames = Directory.GetFiles(FilesDirectory).Select(f => f.Split('\\').Last().Split('.')[0]).ToArray();
             FilesPaths = TableNames.ToDictionary(x => x, x => $"{FilesDirectory}\\{x}.xml");
         }
@@ -92,7 +92,7 @@ namespace ideal_giggle
              
                 using (StreamReader reader = new StreamReader(new MemoryStream(byteArray)))
                 {
-                    XmlSerializer deserializer = new XmlSerializer(typeof(T)/*, new XmlRootAttribute(tableName)*/);
+                    XmlSerializer deserializer = new XmlSerializer(typeof(T));
                     var parsedLines = (T)deserializer.Deserialize(reader);
 
                     return parsedLines;
@@ -101,24 +101,5 @@ namespace ideal_giggle
             }
 
         }
-
-
-
-
-        public T DeserializeToObject<T>(string fileName) where T : class
-        {
-            XmlSerializer serializer =
-                   new XmlSerializer(typeof(T));
-
-            T obj;
-            using (Stream reader = File.OpenRead(fileName))
-            {
-                obj = (T)serializer.Deserialize(reader);
-            }
-            return obj;
-        }
-
-
-
     }
 }

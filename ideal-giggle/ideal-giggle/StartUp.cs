@@ -11,17 +11,13 @@ namespace ideal_giggle
     {
         static void Main(string[] args)
         {
-            // Inserting to Oracle DB
-            OracleAdapter oAdapt =
-                new OracleAdapter();
+            string filesDirectory = 
+                Path.Combine(Environment.CurrentDirectory, @$"..\..\..\..\..\DbData");
+            InsertionManager iManager = new InsertionManager(filesDirectory);
 
-            // Inserting to Мongo DB
-            MongoAdapter mAdapt = 
-                new MongoAdapter();
+            OracleAdapter oAdapt = new OracleAdapter();
+            MongoAdapter mAdapt = new MongoAdapter();
 
-            // string[] tableNames = new string[] { /*"Posts",*/ "Comments", "Votes", "Users", "UsersBadges", "Badges", "Tags" };
-
-            InsertionManager iManager = new InsertionManager();
             iManager.AddAdapter(oAdapt);
             iManager.AddAdapter(mAdapt);
 

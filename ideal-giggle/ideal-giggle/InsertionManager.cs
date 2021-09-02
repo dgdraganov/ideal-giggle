@@ -9,9 +9,9 @@ namespace ideal_giggle
 {
     public class InsertionManager
     {
-        public InsertionManager()
+        public InsertionManager(string filesDirectory)
         {
-            DataManager = new DataManager();
+            DataManager = new DataManager(filesDirectory);
             DbAdapters = new HashSet<IDbAdapter>();
             Measurements = new Dictionary<string, Dictionary<string, long>>();
             Initialize();
@@ -49,16 +49,16 @@ namespace ideal_giggle
 
         public void FillDatabases()
         {
-            var fileNames = DataManager.FilesPaths;
+            var filePaths = DataManager.FilesPaths;
 
             var insertDataMethod = typeof(InsertionManager)
                                                     .GetMethod("InsertData");
 
-            foreach (var table in fileNames.Keys)
+            foreach (var kvp in filePaths)
             {
-                Console.WriteLine($"================ {table} ================");
-                var typeOfTable = Assembly.GetExecutingAssembly().GetType($"ideal_giggle.{table}", true);
-                var filePath = fileNames[table];
+                Console.WriteLine($"================ {kvp.Key} ================");
+                var typeOfTable = Assembly.GetExecutingAssembly().GetType($"ideal_giggle.{kvp.Key}", true);
+                var filePath = kvp.Value;
                 insertDataMethod.MakeGenericMethod(new[] { typeOfTable })
                                  .Invoke(this, new[] { filePath });
 
