@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 
 namespace ideal_giggle
 {
+
     class Program
     {
         static void Main(string[] args)
@@ -25,10 +24,12 @@ namespace ideal_giggle
                 return;
             }
 
-            InsertionManager iManager = new InsertionManager(filesDirectory);
+            var logDirectory = @".\log.txt";
+            var logger = new Logger(logDirectory);
 
-            OracleAdapter oAdapt = new OracleAdapter();
-            MongoAdapter mAdapt = new MongoAdapter();
+            InsertionManager iManager = new InsertionManager(filesDirectory, logger);
+            OracleAdapter oAdapt = new OracleAdapter(logger);
+            MongoAdapter mAdapt = new MongoAdapter(logger);
 
             iManager.AddAdapter(oAdapt);
             iManager.AddAdapter(mAdapt);

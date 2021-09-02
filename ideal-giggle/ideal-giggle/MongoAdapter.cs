@@ -13,12 +13,15 @@ namespace ideal_giggle
 {
     public class MongoAdapter : IDbAdapter
     {
+        private Logger Logger { get; }
+
         private string ConnectionString { get; }
         public string DataBase { get; }
         public string Name { get; }
 
-        public MongoAdapter()
+        public MongoAdapter(Logger logger)
         {
+            Logger = logger;
             ConnectionString = "mongodb://127.0.0.1:27017";
             DataBase = "MongoDB";
             Name = "Mongo Adapter";
@@ -96,18 +99,35 @@ namespace ideal_giggle
                                                                                 typeof(BulkWriteOptions),
                                                                                 typeof(CancellationToken) });
 
-            // invoke BulkWriteAsync method
-            var bulkWriteTask = bulkWriteAsyncMethod.Invoke(collectionResult,
-                                                                new object[] {
+            
+            Stopwatch sw = new Stopwatch();
+
+            object bulkWriteResult;
+            try
+            {
+
+                // invoke BulkWriteAsync method
+                var bulkWriteTask = bulkWriteAsyncMethod.Invoke(collectionResult,
+                                                                    new object[] {
                                                                         listToInsert,
                                                                         null,
                                                                         default(CancellationToken) });
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+                sw.Start();
 
-            // BulkWriteAsync returns a Task<T> so we need to get the value of Result property
-            var bulkWriteResult = bulkWriteTask.GetType().GetProperty("Result").GetValue(bulkWriteTask);
-            sw.Stop();
+                // BulkWriteAsync returns a Task<T> so we need to get the value of Result property
+                bulkWriteResult = bulkWriteTask.GetType().GetProperty("Result").GetValue(bulkWriteTask);
+                sw.Stop();
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                var methodName = nameof(bulkWriteAsyncMethod.Name);
+                ConsolePrinter.PrintLine($"Method {methodName} failed when inserting bulp data to the Mongo Db table {table.GetType().Na}!", ConsoleColor.Red);
+                ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
+                Logger.Log(LogLevel.Error, $"Exception has been thrown by {methodName} method! Time taken: {sw.Elapsed}", ex);
+                return sw.ElapsedMilliseconds;
+            }
+        
 
             //=======================================
 

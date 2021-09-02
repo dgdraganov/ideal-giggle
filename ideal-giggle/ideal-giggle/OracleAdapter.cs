@@ -10,9 +10,10 @@ namespace ideal_giggle
 {
     public class OracleAdapter : IDbAdapter
     {
-      
-        public OracleAdapter()
+
+        public OracleAdapter(Logger logger)
         {
+            Logger = logger;
             OracleConfiguration.OracleDataSources.Add("orclpdb1",
                "(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1)))");
 
@@ -21,9 +22,8 @@ namespace ideal_giggle
         }
 
         public string Name { get; }
-
         private string ConnectionString { get; }
-
+        private Logger Logger { get; }
 
         public long InsertToTable<T>(T table)
         {
@@ -86,7 +86,7 @@ namespace ideal_giggle
             {
                 ConsolePrinter.PrintLine($"Method {nameof(BulkCopyToDb)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
                 ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
-                // log
+                Logger.Log(LogLevel.Error, $"Exception has been thrown by {nameof(BulkCopyToDb)} method! Time taken: {sw.Elapsed}", ex);
                 return 0;
             }
 

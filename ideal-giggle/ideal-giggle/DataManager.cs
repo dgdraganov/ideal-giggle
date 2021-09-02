@@ -10,8 +10,10 @@ namespace ideal_giggle
 {
     public class DataManager
     {
-        public DataManager(string filesDirectory)
+        private Logger Logger { get; }
+        public DataManager(string filesDirectory, Logger logger)
         {
+            Logger = logger;
             FilesDirectory = filesDirectory;
             TableNames = Directory.GetFiles(FilesDirectory).Select(f => f.Split('\\').Last().Split('.')[0]).ToArray();
             FilesPaths = TableNames.ToDictionary(x => x, x => $"{FilesDirectory}\\{x}.xml");
@@ -62,15 +64,26 @@ namespace ideal_giggle
                 
                 var resultString = sb.ToString();
                 var byteArray = Encoding.ASCII.GetBytes(resultString);
-             
-                // Make a stream reader out of the result string
-                // and deserialize is to object T
-                using (var reader = new StreamReader(new MemoryStream(byteArray)))
+
+                try
                 {
-                    XmlSerializer deserializer = new XmlSerializer(typeof(T));
-                    var resultObject = (T)deserializer.Deserialize(reader);
-                    return resultObject;
+                    // Make a stream reader out of the result string
+                    // and deserialize is to object T
+                    using (var reader = new StreamReader(new MemoryStream(byteArray)))
+                    {
+                        XmlSerializer deserializer = new XmlSerializer(typeof(T));
+                        var resultObject = (T)deserializer.Deserialize(reader);
+                        return resultObject;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    ConsolePrinter.PrintLine($"Error when deserializing data from table {typeof(T).Name}!");
+                    Logger.Log(LogLevel.Error, $"Exception has been thrown by {nameof(DeserializeByChunks)} method!", ex);
+
+                    return default(T);
+                }
+              
             }
         }
     }

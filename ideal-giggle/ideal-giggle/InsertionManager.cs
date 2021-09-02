@@ -9,12 +9,14 @@ namespace ideal_giggle
 {
     public class InsertionManager
     {
-        public InsertionManager(string filesDirectory)
+        public InsertionManager(string filesDirectory, Logger logger)
         {
-            DataManager = new DataManager(filesDirectory);
+            Logger = logger;
+            DataManager = new DataManager(filesDirectory, Logger);
             DbAdapters = new HashSet<IDbAdapter>();
             Measurements = new Dictionary<string, Dictionary<string, long>>();
         }
+        private Logger Logger { get; }
 
         public DataManager DataManager { get; }
         public ICollection<IDbAdapter> DbAdapters { get; }
@@ -42,7 +44,6 @@ namespace ideal_giggle
             Measurements[adapter.Name] = new Dictionary<string, long>();
             foreach (var table in DataManager.TableNames)
                 Measurements[adapter.Name][table] = 0;
-            
         }
 
         public void FillDatabases()
@@ -78,6 +79,8 @@ namespace ideal_giggle
                 T data = DataManager.DeserializeByChunks<T>(filePath,
                                                              totalRowsRead,
                                                              SIZE_OF_CHUNK);
+                if (data == null)
+                    return;
                 
                 // If nothing to process - break
                 var rowsRead = (data as dynamic).Rows.Count;
