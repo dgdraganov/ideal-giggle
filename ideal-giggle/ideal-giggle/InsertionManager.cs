@@ -14,7 +14,6 @@ namespace ideal_giggle
             DataManager = new DataManager(filesDirectory);
             DbAdapters = new HashSet<IDbAdapter>();
             Measurements = new Dictionary<string, Dictionary<string, long>>();
-            Initialize();
         }
 
         public DataManager DataManager { get; }
@@ -42,9 +41,8 @@ namespace ideal_giggle
 
             Measurements[adapter.Name] = new Dictionary<string, long>();
             foreach (var table in DataManager.TableNames)
-            {
                 Measurements[adapter.Name][table] = 0;
-            }
+            
         }
 
         public void FillDatabases()
@@ -56,7 +54,7 @@ namespace ideal_giggle
 
             foreach (var kvp in filePaths)
             {
-                Console.WriteLine($"================ {kvp.Key} ================");
+                ConsolePrinter.PrintLine($"================ {kvp.Key} ================");
                 var typeOfTable = Assembly.GetExecutingAssembly().GetType($"ideal_giggle.{kvp.Key}", true);
                 var filePath = kvp.Value;
                 insertDataMethod.MakeGenericMethod(new[] { typeOfTable })
@@ -95,19 +93,11 @@ namespace ideal_giggle
 
                     Measurements[adapterName][tableName] += insertTime;
                 }
-                Console.WriteLine("-----------------------------");
+                ConsolePrinter.PrintLine("-----------------------------");
                 totalRowsRead += rowsRead;
             }
         }
 
-
-        private void Initialize()
-        {
-            var succ = DataManager.CheckIfDataExists();
-            if (!succ)
-                return;
-
-        }
 
     }
 }

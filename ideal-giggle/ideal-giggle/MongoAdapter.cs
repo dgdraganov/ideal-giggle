@@ -15,8 +15,7 @@ namespace ideal_giggle
     {
         private string ConnectionString { get; }
         public string DataBase { get; }
-
-        public string Name{ get; }
+        public string Name { get; }
 
         public MongoAdapter()
         {
@@ -174,7 +173,6 @@ namespace ideal_giggle
                 id = BsonValue.Create(row.Id);
                 name = BsonValue.Create(row.Name);
             }
-
         }
         private class Vote
         {
@@ -249,40 +247,6 @@ namespace ideal_giggle
                 accountId = BsonValue.Create(row.AccountId);
             }
         }
-
-        //private class User
-        //{
-        //    [BsonId] public ObjectId _id { get; set; }
-
-        //    public BsonInt32 id { get; set; }
-        //    public BsonInt32 reputation { get; set; }
-        //    public BsonDateTime creationDate { get; set; }
-        //    public BsonString displayName { get; set; }
-        //    public BsonDateTime lastAccessDate { get; set; }
-        //    public BsonString websiteUrl { get; set; }
-        //    public BsonString location { get; set; }
-        //    public BsonString aboutMe { get; set; }
-        //    public BsonInt32 views { get; set; }
-        //    public BsonInt32 upVotes { get; set; }
-        //    public BsonInt32 downVotes { get; set; }
-        //    public BsonInt32 accountId { get; set; }
-
-        //    public User(Users.Row row)
-        //    {
-        //        id = row.Id;
-        //        reputation = row.Reputation;
-        //        creationDate = row.CreationDate;
-        //        displayName = row.DisplayName;
-        //        lastAccessDate = row.LastAccessDate;
-        //        websiteUrl = row.WebsiteUrl ?? BsonString.Empty;
-        //        location = row.Location ?? BsonString.Empty;
-        //        aboutMe = row.AboutMe ?? BsonString.Empty;
-        //        views = row.Views;
-        //        upVotes = row.UpVotes;
-        //        downVotes = row.DownVotes;
-        //        accountId = row.AccountId;
-        //    }
-        //}
 
         private class Post
         {

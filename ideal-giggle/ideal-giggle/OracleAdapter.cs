@@ -86,6 +86,7 @@ namespace ideal_giggle
             {
                 ConsolePrinter.PrintLine($"Method {nameof(BulkCopyToDb)} failed when inserting bulp data to the oracle table {targetTable}!", ConsoleColor.Red);
                 ConsolePrinter.PrintLine($"{ex.Message}", ConsoleColor.DarkYellow);
+                // log
                 return 0;
             }
 

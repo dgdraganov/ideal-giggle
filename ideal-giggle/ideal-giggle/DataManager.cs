@@ -21,35 +21,6 @@ namespace ideal_giggle
         public string[] TableNames { get; }
         public IDictionary<string, string> FilesPaths { get; }
 
-
-        public bool CheckIfDataExists()
-        {
-
-            if (!Directory.Exists(FilesDirectory))
-            {
-                var dirInfo = Directory.CreateDirectory(FilesDirectory);
-
-                ConsolePrinter.PrintLine($"Directory '{dirInfo.FullName}' was missing and it has been created! Make sure the following files are present in the directory before restarting the program:", ConsoleColor.Red);
-                ConsolePrinter.PrintLine($"{string.Join(", ", TableNames)}");
-                return false;
-            }
-
-            var files = Directory.GetFiles(FilesDirectory).Select(f => f.Split("\\").Last()).ToArray();
-
-            foreach (var fileName in TableNames)
-            {
-                var currentFile = string.Concat(fileName, ".xml");
-                if (!files.Contains(currentFile))
-                {
-                    ConsolePrinter.PrintLine($"{currentFile} is missing!\nMake sure the following files are present in the directory before restarting the program:", ConsoleColor.Red);
-                    ConsolePrinter.PrintLine($"{string.Join(", ", TableNames)}");
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public T DeserializeByChunks<T>(string fileName,
                                             int linesToSkip,
                                             int linesToRead)
@@ -58,18 +29,20 @@ namespace ideal_giggle
                   new XmlSerializer(typeof(List<T>));
             T obj;
 
-            using (StreamReader xmlReader = new StreamReader(File.OpenRead(fileName)))
-            {
-                var tableName = typeof(T).Name.ToLower();
-                var openingTag = $"<{tableName}>";
-                var closingTag = $"</{tableName}>";
+            var tableName = typeof(T).Name.ToLower();
+            var openingTag = $"<{tableName}>";
+            var closingTag = $"</{tableName}>";
 
+            using (var xmlReader = 
+                         new StreamReader(File.OpenRead(fileName)))
+            {
                 // Skip lines that are already read
                 for (int i = 0; i < linesToSkip + 2; i++)
                     xmlReader.ReadLine();
                 
+                var sb = new StringBuilder();
 
-                StringBuilder sb = new StringBuilder();
+                // Start with opening xml tag
                 sb.AppendLine(openingTag);
 
                 var linesRead = 0;
@@ -82,24 +55,23 @@ namespace ideal_giggle
                     linesRead++;
                 }
                
+                // If reading stopped and the end tag is not 
+                // reached - add closing tag before serialization
                 if (row != null && row != closingTag)
-                {
                     sb.Append(closingTag);
-                }
-
+                
                 var resultString = sb.ToString();
-                byte[] byteArray = Encoding.ASCII.GetBytes(resultString);
+                var byteArray = Encoding.ASCII.GetBytes(resultString);
              
-                using (StreamReader reader = new StreamReader(new MemoryStream(byteArray)))
+                // Make a stream reader out of the result string
+                // and deserialize is to object T
+                using (var reader = new StreamReader(new MemoryStream(byteArray)))
                 {
                     XmlSerializer deserializer = new XmlSerializer(typeof(T));
-                    var parsedLines = (T)deserializer.Deserialize(reader);
-
-                    return parsedLines;
+                    var resultObject = (T)deserializer.Deserialize(reader);
+                    return resultObject;
                 }
-
             }
-
         }
     }
 }
