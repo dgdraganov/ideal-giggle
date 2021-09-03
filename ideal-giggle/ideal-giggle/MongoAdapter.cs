@@ -128,7 +128,6 @@ namespace ideal_giggle
                 return sw.ElapsedMilliseconds;
             }
         
-
             //=======================================
 
             var bulkWriteResultType = bulkWriteResult.GetType();
@@ -148,19 +147,19 @@ namespace ideal_giggle
             return database.ListCollectionNames(options).Any();
         }
 
-        private class Tag
+        private class SecretKey
         {
             [BsonId] public ObjectId _id { get; set; }
 
             public BsonValue id { get; set; }
-            public BsonValue tagName { get; set; }
-            public BsonValue count { get; set; }
+            public BsonValue clientkey { get; set; }
+            public BsonValue userid { get; set; }
 
-            public Tag(Tags.Row row)
+            public SecretKey(SecretKeys.Row row)
             {
                 id = BsonValue.Create(row.Id);
-                tagName = BsonValue.Create(row.TagName);
-                count = BsonValue.Create(row.Count);
+                clientkey = BsonValue.Create(row.ClientKey);
+                userid = BsonValue.Create(row.UserId);
             }
         }
 

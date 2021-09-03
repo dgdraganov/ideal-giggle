@@ -20,23 +20,22 @@ namespace ideal_giggle
         }
     }
 
-    [XmlRoot("tags")]
-    public class Tags
+    [XmlRoot("secretkeys")]
+    public class SecretKeys
     {
         [XmlElement("row")]
         public List<Row> Rows { get; set; }
 
-       
         public class Row
         {
             [XmlAttribute("Id")]
             public int Id { get; set; }
 
-            [XmlAttribute("TagName")]
-            public string TagName { get; set; }
+            [XmlAttribute("ClientKey")]
+            public string ClientKey { get; set; }
 
-            [XmlAttribute("Count")]
-            public int Count { get; set; }
+            [XmlAttribute("UserId")]
+            public int UserId { get; set; }
         }
     }
 
