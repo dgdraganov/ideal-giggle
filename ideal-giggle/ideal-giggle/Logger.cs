@@ -21,7 +21,7 @@ namespace ideal_giggle
 
             using (var streamWriter = new StreamWriter(LogDirectory))
             {
-                streamWriter.WriteLine($"[{state.ToString().ToUpper()}]: {message}");
+                streamWriter.WriteLine($"{DateTime.Now}[{state.ToString().ToUpper()}]:\t {message}");
             }
         }
 
