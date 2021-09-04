@@ -24,17 +24,26 @@ namespace ideal_giggle
 
         public void PrintStatistics()
         {
+            var allFilePaths = DataManager.FilesPaths;
+            ConsolePrinter.PrintLine("\tFile sizes:");
+            foreach (var file in allFilePaths)
+            {
+                var sizeInKB = new FileInfo(file.Value).Length / 1000;
+                ConsolePrinter.PrintLine($"\t\t{file.Key}.xml\t\t  {sizeInKB} KB");
+            }
+
             foreach (var adapter in Measurements.Keys)
             {
                 ConsolePrinter.PrintLine($"\t{adapter}:", ConsoleColor.DarkYellow);
                 long totalTime = 0;
                 foreach (var table in Measurements[adapter])
                 {
-                    ConsolePrinter.PrintLine($"\t\t{table.Key} - {TimeSpan.FromMilliseconds(table.Value)}", ConsoleColor.Green);
+                    ConsolePrinter.PrintLine($"\t\t{table.Key} - \t\t{TimeSpan.FromMilliseconds(table.Value)}", ConsoleColor.Green);
                     totalTime += table.Value;
                 }
-                ConsolePrinter.PrintLine($"\t\tTotal time: {totalTime}", ConsoleColor.Cyan);
+                ConsolePrinter.PrintLine($"\t\tTotal time: \t\t{TimeSpan.FromMilliseconds(totalTime)}", ConsoleColor.Cyan);
             }
+
         }
 
         public void AddAdapter(IDbAdapter adapter)
