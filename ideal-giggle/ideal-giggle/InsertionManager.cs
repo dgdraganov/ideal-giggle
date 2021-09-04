@@ -31,7 +31,7 @@ namespace ideal_giggle
                 var sizeInKB = new FileInfo(file.Value).Length / 1000;
                 ConsolePrinter.PrintLine($"\t\t{file.Key}.xml\t\t  {sizeInKB} KB");
             }
-
+            
             foreach (var adapter in Measurements.Keys)
             {
                 ConsolePrinter.PrintLine($"\t{adapter}:", ConsoleColor.DarkYellow);
@@ -78,16 +78,14 @@ namespace ideal_giggle
 
         public void InsertData<T>(string filePath)
         {
-            const int SIZE_OF_CHUNK = 1_000_000;
-            const int MAX_LINES_TO_INSERT = 10_000_000;
-
+            const int BYTES_TO_READ = 300_000_000;  // 300 MB
             int totalRowsRead = 0;
 
-            while (totalRowsRead < MAX_LINES_TO_INSERT)
+            while (true)
             {
                 T data = DataManager.DeserializeByChunks<T>(filePath,
                                                              totalRowsRead,
-                                                             SIZE_OF_CHUNK);
+                                                             BYTES_TO_READ);
                 if (data == null)
                     return;
                 

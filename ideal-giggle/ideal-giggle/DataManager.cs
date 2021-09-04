@@ -25,7 +25,7 @@ namespace ideal_giggle
 
         public T DeserializeByChunks<T>(string fileName,
                                             int linesToSkip,
-                                            int linesToRead)
+                                            int volumeToRead)
         {
             XmlSerializer serializer =
                   new XmlSerializer(typeof(List<T>));
@@ -47,14 +47,14 @@ namespace ideal_giggle
                 // Start with opening xml tag
                 sb.AppendLine(openingTag);
 
-                var linesRead = 0;
+                var volumeRead = 0;
                 string row = null;
 
-                while ((row = xmlReader.ReadLine()) != null && 
-                            linesRead < linesToRead)
+                while ((row = xmlReader.ReadLine()) != null
+                           && volumeRead <= volumeToRead)
                 {
                     sb.Append(row);
-                    linesRead++;
+                    volumeRead += Encoding.ASCII.GetByteCount(row);
                 }
                
                 // If reading stopped and the end tag is not 
