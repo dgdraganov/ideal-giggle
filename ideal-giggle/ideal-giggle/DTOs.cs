@@ -39,7 +39,7 @@ namespace ideal_giggle
         }
     }
 
-    [XmlRoot("badges")]
+    [XmlRoot("usersbadges")]
     public class UsersBadges
     {
         [XmlElement("row")]

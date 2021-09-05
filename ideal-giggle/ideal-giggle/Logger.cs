@@ -17,7 +17,11 @@ namespace ideal_giggle
         public void Log(LogLevel state, string message)
         {
             if (!File.Exists(LogDirectory))
-                File.Create(LogDirectory);
+            {
+                var createStream = File.Create(LogDirectory);
+                createStream.Dispose();
+            }
+                
 
             using (var streamWriter = new StreamWriter(LogDirectory))
             {
