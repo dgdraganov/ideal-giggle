@@ -78,14 +78,19 @@ namespace ideal_giggle
 
         public void InsertData<T>(string filePath)
         {
-            const int BYTES_TO_READ = 300_000_000;  // 300 MB
+
+            const int BYTES_TO_READ =       300_000_000;  // 300 MB
+            const int TOTAL_ROWS_TO_READ = 100_000;
+            const int MAX_CHUNK_ROWS =      25_000;
+
             int totalRowsRead = 0;
 
-            while (true)
+            while (totalRowsRead < TOTAL_ROWS_TO_READ)
             {
                 T data = DataManager.DeserializeByChunks<T>(filePath,
                                                              totalRowsRead,
-                                                             BYTES_TO_READ);
+                                                             BYTES_TO_READ,
+                                                             MAX_CHUNK_ROWS);
                 if (data == null)
                     return;
                 
@@ -93,6 +98,8 @@ namespace ideal_giggle
                 var rowsRead = (data as dynamic).Rows.Count;
                 if (rowsRead == 0)
                     break;
+
+                totalRowsRead += rowsRead;
 
                 foreach (var adapter in DbAdapters)
                 {
@@ -104,7 +111,6 @@ namespace ideal_giggle
                     Measurements[adapterName][tableName] += insertTime;
                 }
                 ConsolePrinter.PrintLine("-----------------------------");
-                totalRowsRead += rowsRead;
             }
         }
 

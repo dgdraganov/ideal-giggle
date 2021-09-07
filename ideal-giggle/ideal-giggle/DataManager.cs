@@ -10,7 +10,7 @@ namespace ideal_giggle
 {
     public class DataManager
     {
-        private Logger Logger { get; }
+
         public DataManager(string filesDirectory, Logger logger)
         {
             Logger = logger;
@@ -18,15 +18,17 @@ namespace ideal_giggle
             TableNames = Directory.GetFiles(FilesDirectory).Select(f => f.Split('\\').Last().Split('.')[0]).ToArray();
             FilesPaths = TableNames.ToDictionary(x => x, x => $"{FilesDirectory}\\{x}.xml");
         }
-
+        private Logger Logger { get; }
         public string FilesDirectory { get; }
         public string[] TableNames { get; }
         public IDictionary<string, string> FilesPaths { get; }
 
         public T DeserializeByChunks<T>(string fileName,
                                             int linesToSkip,
-                                            int volumeToRead)
+                                            int maxChunkMemory,
+                                            int maxChunkRows)
         {
+
             XmlSerializer serializer =
                   new XmlSerializer(typeof(List<T>));
             T obj;
@@ -49,9 +51,11 @@ namespace ideal_giggle
 
                 var volumeRead = 0;
                 string row = null;
+                var rowsRead = 0;
 
                 while ((row = xmlReader.ReadLine()) != null
-                           && volumeRead <= volumeToRead)
+                           && volumeRead < maxChunkMemory
+                           && rowsRead < maxChunkRows)
                 {
                     sb.Append(row);
                     volumeRead += Encoding.ASCII.GetByteCount(row);
