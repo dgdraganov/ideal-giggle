@@ -21,8 +21,8 @@ namespace ideal_giggle
             [XmlAttribute("Subscribtion")]
             public bool Subscribtion { get; set; }
 
-            [XmlAttribute("LastLoginDate")]
-            public DateTime LastLoginDate { get; set; }
+            [XmlAttribute("Last_Login_Date")]
+            public DateTime Last_Login_Date { get; set; }
         }
 
     }
