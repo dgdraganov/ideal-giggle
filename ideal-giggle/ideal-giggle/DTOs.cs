@@ -4,6 +4,34 @@ using System.Xml.Serialization;
 
 namespace ideal_giggle
 {
+
+    [XmlRoot("users")]
+    public class Users
+    {
+        [XmlElement("record")] // always record
+        public List<Row> Rows { get; set; }
+        public class Row
+        {
+            [XmlAttribute("Id")]
+            public int Id { get; set; }
+
+            [XmlAttribute("Name")]
+            public string Name { get; set; }
+
+            [XmlAttribute("Subscribtion")]
+            public bool Subscribtion { get; set; }
+
+            [XmlAttribute("LastLoginDate")]
+            public DateTime LastLoginDate { get; set; }
+        }
+
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////
+
+    // OLD  
     [XmlRoot("badges")]
     public class Badges
     {
@@ -19,6 +47,24 @@ namespace ideal_giggle
             public string Name { get; set; }
         }
     }
+
+    // <badges>
+    //      <row Id="1" Name="Penko"/>
+    //      <row Id="2" Name="Vanko"/>
+    // </badges>
+
+/// ////////////////////////////////////////////////////////////////////
+
+    // <badges>
+    //      <row>
+    //          <Id>1</Id>
+    //          <Name> Penko <Name>
+    //      </row>
+    //      <row>
+    //          <Id>2</Id>
+    //          <Name> Vanko <Name>
+    //      </row>
+    // </badges>
 
     [XmlRoot("secretkeys")]
     public class SecretKeys
@@ -123,52 +169,52 @@ namespace ideal_giggle
         }
     }
 
-    [XmlRoot("users")]
-    public class Users
-    {
+    //[XmlRoot("users")]
+    //public class Users
+    //{
 
-        [XmlElement("row")]
-        public List<Row> Rows { get; set; }
+    //    [XmlElement("row")]
+    //    public List<Row> Rows { get; set; }
 
-        public class Row
-        {
-            [XmlAttribute("Id")]
-            public int Id { get; set; }
+    //    public class Row
+    //    {
+    //        [XmlAttribute("Id")]
+    //        public int Id { get; set; }
 
-            [XmlAttribute("Reputation")]
-            public int Reputation { get; set; }
+    //        [XmlAttribute("Reputation")]
+    //        public int Reputation { get; set; }
 
-            [XmlAttribute("CreationDate")]
-            public DateTime CreationDate { get; set; }
+    //        [XmlAttribute("CreationDate")]
+    //        public DateTime CreationDate { get; set; }
 
-            [XmlAttribute("DisplayName")]
-            public string DisplayName { get; set; }
+    //        [XmlAttribute("DisplayName")]
+    //        public string DisplayName { get; set; }
 
-            [XmlAttribute("LastAccessDate")]
-            public DateTime LastAccessDate { get; set; }
+    //        [XmlAttribute("LastAccessDate")]
+    //        public DateTime LastAccessDate { get; set; }
 
-            [XmlAttribute("WebsiteUrl")]
-            public string WebsiteUrl { get; set; }
+    //        [XmlAttribute("WebsiteUrl")]
+    //        public string WebsiteUrl { get; set; }
 
-            [XmlAttribute("Location")]
-            public string Location { get; set; }
+    //        [XmlAttribute("Location")]
+    //        public string Location { get; set; }
 
-            [XmlAttribute("AboutMe")]
-            public string AboutMe { get; set; }
+    //        [XmlAttribute("AboutMe")]
+    //        public string AboutMe { get; set; }
 
-            [XmlAttribute("Views")]
-            public int Views { get; set; }
+    //        [XmlAttribute("Views")]
+    //        public int Views { get; set; }
 
-            [XmlAttribute("UpVotes")]
-            public int UpVotes { get; set; }
+    //        [XmlAttribute("UpVotes")]
+    //        public int UpVotes { get; set; }
 
-            [XmlAttribute("DownVotes")]
-            public int DownVotes { get; set; }
+    //        [XmlAttribute("DownVotes")]
+    //        public int DownVotes { get; set; }
 
-            [XmlAttribute("AccountId")]
-            public int AccountId { get; set; }
-        }
-    }
+    //        [XmlAttribute("AccountId")]
+    //        public int AccountId { get; set; }
+    //    }
+    //}
 
     [XmlRoot("votes")]
     public class Votes
